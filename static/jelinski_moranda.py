@@ -1,5 +1,7 @@
 __author__ = 'Vasiliy Zemlyanov'
 
+import numpy as np
+
 class JelinskiMoranda:
 
     def __init__(self, X):
@@ -11,6 +13,7 @@ class JelinskiMoranda:
         Xi - интервал времени между соседними ошибками
         :return:
         '''
+
         self.X = X
         self.n = len(X)
         self.find_m()
@@ -19,7 +22,8 @@ class JelinskiMoranda:
         self.func_lambda()
         self.func_x()
         self.func_t()
-        pass
+
+        self.func_phi()
 
     def func_f(self, m):
         self.f = sum([1.0 / (m - i) for i in range(1, self.n+1)])
@@ -48,12 +52,21 @@ class JelinskiMoranda:
 
     # Коэффициенты
     def func_b(self):
+        '''
+        Неизвестное общее количество ошибок. В ряде источников N.
+        :return:
+        '''
         self.b = self.m - 1
         return self.b
 
     def func_k(self):
         self.k = self.n / ((self.b + 1) * sum(self.X) - sum([i * self.X[i-1] for i in range(1, self.n+1)]))
         return self.k
+
+    def func_phi(self):
+        self.phi = self.n / (self.b *\
+                   sum(self.X) - sum([(i+1) * self.X[i] for i in range(0, len(self.X))]))
+        return self.phi
 
     # Определение оценок
     def func_lambda(self, i = None):
@@ -63,7 +76,7 @@ class JelinskiMoranda:
         '''
         if i is None:
             i = self.n + 1
-        self.lambd = self.k * (self.b - (i - 1))
+        self.lambd = self.k * (self.b - i + 1)
         return self.lambd
 
     def func_x(self, i = None):
@@ -84,6 +97,17 @@ class JelinskiMoranda:
         self.t = 1.0 / self.k * sum([1.0 / i for i in range(1, self.b - self.n + 1)])
         return self.t
 
+    def func_n(self, tau = None):
+        # TODO: TEST
+        '''
+        Функция среднего значения текущего количества отказов
+        '''
+        if tau is None:
+            tau = sum(self.X)
+            print(tau)
+        func = lambda tau: self.n * (1 - np.exp(-self.phi * tau))
+        return func(tau)
+
     def debug_print(self):
         print('a: ', self.a)
         print('m: ', self.m)
@@ -93,8 +117,11 @@ class JelinskiMoranda:
         print('x: ', self.x)
         print('t: ', self.t)
 
+        print('n: ', self.func_n())
+
 test_data = [3, 2, 10, 7, 14, 8, 5, 1, 6, 9, 13, 3, 5, 5, 9, 2, 24, 1, 9, 8, 11, 6, 8, 2, 9, 74, 14, 7, \
              22, 45, 3, 22, 4, 9, 3, 83, 6, 8, 2, 6]
 
-jm = JelinskiMoranda(test_data)
-jm.debug_print()
+
+# jm = JelinskiMoranda(test_data)
+# jm.debug_print()
