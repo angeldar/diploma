@@ -3,6 +3,7 @@
 import os
 import sys
 import fnmatch
+import codecs
 import xml.etree.cElementTree as et
 from contextlib import contextmanager
 from radon.visitors import Function
@@ -162,3 +163,21 @@ def dict_to_xml(results):
 #     return TEMPLATE.format(BRIGHT, letter_colored, block.lineno,
 #                            block.col_offset, block.fullname, rank_colored,
 #                            compl, reset=RESET)
+
+###########
+
+def merge_files(files):
+    '''Merge :files: into one .py file for future analise of hole project.
+    '''
+    result_filename = "TEMP.py"
+    with open(result_filename, 'w') as result_file:
+        for file in files:
+            with open(file, 'r') as curr_file:
+                # print(curr_file)
+                try:
+                    content = curr_file.read()
+                    result_file.write("### " + file + "\n\r")
+                    result_file.write(content + "\n\r")
+                except:
+                    print("Error in file " + file)
+
