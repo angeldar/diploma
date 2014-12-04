@@ -95,8 +95,8 @@ class GitWalker():
             print('err ',err)
 
 def test_git_walker():
-    gw = GitWalker('G:\\dev\\diploma')
+    gw = GitWalker('G:\\dev\\django')
     print("Number of commits: ", gw.number_of_commits())
-    print("Hashes of the commitsL ", gw.log_reverse_commits_hashes())
+    print("Hashes of the commits: ", gw.log_reverse_commits_hashes())
 
 test_git_walker()

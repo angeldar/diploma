@@ -169,8 +169,15 @@ def dict_to_xml(results):
 def merge_files(files):
     '''Merge :files: into one .py file for future analise of hole project.
     '''
-    result_filename = "TEMP.py"
-    with open(result_filename, 'w') as result_file:
+    DISK_NAME = "G:"
+    DIR_NAME = "TEMP"
+    FILE_NAME = "TEMP.py"
+    file_dir = DISK_NAME + '/' + DIR_NAME
+    if not os.path.exists(file_dir):
+        os.makedirs(file_dir)
+    filename = file_dir + "/" + FILE_NAME
+    print(filename)
+    with open(filename, 'w') as result_file:
         for file in files:
             with open(file, 'r') as curr_file:
                 # print(curr_file)
@@ -180,4 +187,4 @@ def merge_files(files):
                     result_file.write(content + "\n\r")
                 except:
                     print("Error in file " + file)
-
+    return (file_dir, FILE_NAME)
