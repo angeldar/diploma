@@ -3,17 +3,23 @@ from radon.metrics import  h_visit
 
 from radon.tools import _open, iter_filenames, merge_files
 
+from git_walker import git_walker
+
 PATH = ['./tests']
 
 # Ciclomatic Complexity
-def ciclomatic_test(path, filename):
+def get_ciclomatic_for_folder(path):
     print("Ciclomatic")
     harvester = cc(path)
     harvester.run()
-    with open('G:/test.txt','w+') as f:
-        f.write(harvester.as_json())
-    # for func in harvester._to_dicts()[filename]:
-    #     print("{0} : {1}".format((func['classname'] + "." if 'classname' in func else "" ) + func['name'], func['complexity']))
+    data = harvester._to_dicts()
+    ranks = {'A': 0, 'B': 0, 'C': 0, 'D': 0, 'E': 0, 'F': 0}
+    for file in data:
+        for func in data[file]:
+            if 'name' in func:
+                if 'rank' in func:
+                    ranks[func['rank']] += 1
+    return ranks
 
 # Raw Metrics
 def raw_test(path):
@@ -43,14 +49,36 @@ def test_merge_files(folders):
         filenames.append(filename)
     return merge_files(filenames)
 
+def get_cc_from_repo():
+    REPO_PATH = 'G:/dev/django'
+    res_file_name='G:/django.txt'
+    gw = git_walker(REPO_PATH)
+    path = gw.create_path(20)
+    open(res_file_name,'w').close()
+    for hash in reversed(path):
+        date = gw.get_commit_date(hash)
+        gw.reset_to_commit(hash)
+        print(date)
+        ranks = get_ciclomatic_for_folder([REPO_PATH])
+
+        res = "{0}\t{1}\t{2}\t{3}\t{4}\t{5}\n".format(
+            ranks['A'], ranks['B'], ranks['C'], ranks['D'], ranks['E'], ranks['F'])
+
+        with open(res_file_name, 'a+') as f:
+            f.write(date + '\t' + res)
+
 print('Start')
 
-filedir, filename = test_merge_files(folders = ['G:\\dev\\django'])
+filedir = 'G:\\TEMP'
+filename = 'TEMP.py'
 
-ciclomatic_test([filedir], [filedir + '/' + filename])
-raw_test([filedir])
-mi_test([filedir])
-holstead_test([filedir])
+# filedir, filename = test_merge_files(folders = ['G:\\dev\\django'])
 
+# ciclomatic_test([filedir], [filedir + '\\' + filename])
+# raw_test([filedir])
+# mi_test([filedir])
+# holstead_test([filedir])
+
+get_cc_from_repo()
 
 print('End')

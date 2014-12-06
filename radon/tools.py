@@ -172,10 +172,10 @@ def merge_files(files):
     DISK_NAME = "G:"
     DIR_NAME = "TEMP"
     FILE_NAME = "TEMP.py"
-    file_dir = DISK_NAME + '/' + DIR_NAME
+    file_dir = DISK_NAME + '\\' + DIR_NAME
     if not os.path.exists(file_dir):
         os.makedirs(file_dir)
-    filename = file_dir + "/" + FILE_NAME
+    filename = file_dir + "\\" + FILE_NAME
     print(filename)
     with open(filename, 'w') as result_file:
         for file in files:

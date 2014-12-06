@@ -35,7 +35,7 @@ import re
 
 GIT_PATH = "C:/Users/NoNeed/AppData/Local/GitHub/PortableGit_ed44d00daa128db527396557813e7b68709ed0e2/bin/git.exe"
 
-class GitWalker():
+class git_walker():
 
     def __init__(self, repo_directory):
         self.repo_directory = repo_directory
@@ -112,15 +112,28 @@ class GitWalker():
             path.append(hashes[i * step])
         return path
 
+    def reset_to_commit(self, commit_hash):
+        '''reset the current state to the commit by its hash'''
+        p = subprocess.Popen([GIT_PATH, 'reset', '--hard', commit_hash], stdout = subprocess.PIPE,
+                             stderr = subprocess.PIPE, shell=False)
+        (res, err) = p.communicate()
+        if err:
+            print("Error: ", err)
+        print(res)
+
 def test_git_walker():
-    gw = GitWalker('G:\\dev\\django')
+    REPO_PATH = 'G:/dev/django'
+    gw = git_walker(REPO_PATH)
     print("Number of commits: ", gw.number_of_commits())
     commits = gw.get_commits_hashes()
     print("Hashes of the commits: ", commits)
-    print("Date of the first commit: ", gw.get_commit_date(commits[0]))
+    # print("Date of the first commit: ", gw.get_commit_date(commits[0]))
+    #
+    # # Create path and print it
+    # path = gw.create_path(20)
+    # for hash in path:
+    #      print(hash, gw.get_commit_date(hash))
 
-    path = gw.create_path(20)
-    for hash in path:
-         print(hash, gw.get_commit_date(hash))
+    gw.reset_to_commit(commits[0])
 
-test_git_walker()
+# test_git_walker()
