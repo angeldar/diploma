@@ -78,7 +78,7 @@ class GitWalker():
             print("Errors: ", err)
             return -1
 
-    def log_reverse_commits_hashes(self):
+    def get_commits_hashes(self):
         '''
         Get hashes of the commits in the git repository in reverse order.
         (From first one to the last one)
@@ -94,9 +94,18 @@ class GitWalker():
         else:
             print('err ',err)
 
+    def get_commit_date(self, commit_hash):
+        p = subprocess.Popen([GIT_PATH, 'show', '-s', '--format=%ci', commit_hash], stdout = subprocess.PIPE,
+                             stderr = subprocess.PIPE, shell = False)
+        (res, err) = p.communicate()
+        print('res',res)
+        print('err',err)
+
 def test_git_walker():
     gw = GitWalker('G:\\dev\\django')
     print("Number of commits: ", gw.number_of_commits())
-    print("Hashes of the commits: ", gw.log_reverse_commits_hashes())
+    commits = gw.get_commits_hashes()
+    print("Hashes of the commits: ", commits)
+    print("Date of the first commit: ", gw.get_commit_date(commits[0]))
 
 test_git_walker()
