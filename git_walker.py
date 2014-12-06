@@ -66,9 +66,7 @@ class GitWalker():
         pass
 
     def number_of_commits(self):
-        '''
-        Get number of commits in git repository
-        '''
+        '''Get number of commits in git repository'''
         p = subprocess.Popen([GIT_PATH, 'rev-list', 'HEAD', '--count'], stdout = subprocess.PIPE,
                              stderr = subprocess.PIPE, shell=False)
         (res, err) = p.communicate()
@@ -79,10 +77,8 @@ class GitWalker():
             return -1
 
     def get_commits_hashes(self):
-        '''
-        Get hashes of the commits in the git repository in reverse order.
-        (From first one to the last one)
-        '''
+        '''Get hashes of the commits in the git repository in reverse order.
+        (From first one to the last one)'''
         p = subprocess.Popen([GIT_PATH, 'log', '--reverse'], stdout = subprocess.PIPE,
             stderr = subprocess.PIPE, shell=False)
         (res, err) = p.communicate()
@@ -95,11 +91,26 @@ class GitWalker():
             print('err ',err)
 
     def get_commit_date(self, commit_hash):
+        '''Get the date of the commit by the hash of this commit'''
         p = subprocess.Popen([GIT_PATH, 'show', '-s', '--format=%ci', commit_hash], stdout = subprocess.PIPE,
                              stderr = subprocess.PIPE, shell = False)
         (res, err) = p.communicate()
-        print('res',res)
-        print('err',err)
+        if err:
+            print("Error: ", err)
+        date = res.decode('utf-8').split()[0]
+        return date
+
+    def create_path(self, number_of_steps):
+        '''Create path through branch history with the number of steps'''
+        number_of_commits = self.number_of_commits()
+        if number_of_steps > number_of_commits:
+            assert "Error: Number of steps can't be larger then number of commits"
+        step = int(number_of_commits / number_of_steps)
+        path = []
+        hashes = self.get_commits_hashes()
+        for i in range(0, number_of_steps+1):
+            path.append(hashes[i * step])
+        return path
 
 def test_git_walker():
     gw = GitWalker('G:\\dev\\django')
@@ -107,5 +118,9 @@ def test_git_walker():
     commits = gw.get_commits_hashes()
     print("Hashes of the commits: ", commits)
     print("Date of the first commit: ", gw.get_commit_date(commits[0]))
+
+    path = gw.create_path(20)
+    for hash in path:
+         print(hash, gw.get_commit_date(hash))
 
 test_git_walker()
