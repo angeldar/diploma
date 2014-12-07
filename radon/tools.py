@@ -1,16 +1,14 @@
 '''This module contains various utility functions used in the CLI interface.'''
 
 import os
+import re
 import sys
 import fnmatch
-import codecs
 import xml.etree.cElementTree as et
 from contextlib import contextmanager
 from radon.visitors import Function
 from radon.complexity import cc_rank
-# from radon.cli.colors import (LETTERS_COLORS, RANKS_COLORS, TEMPLATE, BRIGHT,
-#                               RESET)
-
+import subprocess
 
 @contextmanager
 def _open(path):
@@ -121,6 +119,63 @@ def dict_to_xml(results):
             file.text = filename
     return et.tostring(ccm).decode('utf-8')
 
+def merge_files(files):
+    '''Merge :files: into one .py file for future analise of hole project.
+    '''
+    FILE_DIR = "G:\\TEMP"
+    FILE_NAME = "TEMP.py"
+    if not os.path.exists(FILE_DIR):
+        os.makedirs(FILE_DIR)
+    filename = FILE_DIR + "\\" + FILE_NAME
+    with open(filename, 'w+') as result_file:
+        for file in files:
+            # try:
+            #     tmp_file = open(file, 'r')
+            #     content = tmp_file.read()
+            #     tmp_file.close()
+            #     convert_old_version_file(file)
+            # except:
+            #     print("Error in file: " + file)
+
+            with open(file, 'r') as curr_file:
+                try:
+                    content = curr_file.read()
+                    result_file.write("### " + file + "\n\r")
+                    result_file.write(content + "\n\r")
+                except:
+                    print("Error in file: " + file)
+    # old_version_tool(filename)
+    return (FILE_DIR, FILE_NAME)
+
+def convert_old_version_file(filename):
+    converter_path = 'F:/soft/coding/python3/Tools/Scripts/2to3.py'
+
+    print("Converting file: ", filename)
+
+    p = subprocess.Popen(['python', converter_path, '-w', filename], stdout = subprocess.PIPE,
+                 stderr = subprocess.PIPE, shell=False)
+    p.communicate()
+
+def old_version_tool(content):
+    print("Converter")
+    # converter_path = 'F:/soft/coding/python3/Tools/Scripts/2to3.py'
+    # p = subprocess.Popen(['python', converter_path, '-w', file], stdout = subprocess.PIPE,
+    #                          stderr = subprocess.PIPE, shell=False)
+
+    regex = re.compile("except\W[_a-zA-Z0-9\.]+,\W[_a-zA-Z\.]+:")
+    regex_print = re.compile("print [\'\"].+[\'\"]")
+
+    regex_string1 = re.compile("\"[\"].+?\"")
+    regex_string2 = re.compile("\'[\'].+?\'")
+
+    if regex.search(content) is not None:
+        print("old version change")
+    content = regex.sub("except Error as OldPythonVersionError:", content)
+    content = regex_print.sub("print()", content)
+
+    content = regex_string1.sub("\"\"", content)
+    content = regex_string2.sub("\'\'", content)
+    return content
 
 # def cc_to_terminal(results, show_complexity, min, max, total_average):
 #     '''Transfom Cyclomatic Complexity results into a 3-elements tuple:
@@ -165,26 +220,3 @@ def dict_to_xml(results):
 #                            compl, reset=RESET)
 
 ###########
-
-def merge_files(files):
-    '''Merge :files: into one .py file for future analise of hole project.
-    '''
-    DISK_NAME = "G:"
-    DIR_NAME = "TEMP"
-    FILE_NAME = "TEMP.py"
-    file_dir = DISK_NAME + '\\' + DIR_NAME
-    if not os.path.exists(file_dir):
-        os.makedirs(file_dir)
-    filename = file_dir + "\\" + FILE_NAME
-    print(filename)
-    with open(filename, 'w') as result_file:
-        for file in files:
-            with open(file, 'r') as curr_file:
-                # print(curr_file)
-                try:
-                    content = curr_file.read()
-                    result_file.write("### " + file + "\n\r")
-                    result_file.write(content + "\n\r")
-                except:
-                    print("Error in file " + file)
-    return (file_dir, FILE_NAME)

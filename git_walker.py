@@ -108,7 +108,7 @@ class git_walker():
         step = int(number_of_commits / number_of_steps)
         path = []
         hashes = self.get_commits_hashes()
-        for i in range(0, number_of_steps+1):
+        for i in range(0, number_of_steps):
             path.append(hashes[i * step])
         return path
 
@@ -117,13 +117,21 @@ class git_walker():
         p = subprocess.Popen([GIT_PATH, 'reset', '--hard', commit_hash], stdout = subprocess.PIPE,
                              stderr = subprocess.PIPE, shell=False)
         (res, err) = p.communicate()
-        if err:
+        DEBUG = False
+        if err and DEBUG:
             print("Error: ", err)
         print(res)
 
-def test_git_walker():
-    REPO_PATH = 'G:/dev/django'
-    gw = git_walker(REPO_PATH)
+    def pull(self):
+        p = subprocess.Popen([GIT_PATH, 'pull'], stdout = subprocess.PIPE,
+                            stderr = subprocess.PIPE, shell=False)
+        (res, err) = p.communicate()
+        if err:
+            print("Git Error: ", err)
+        print(res)
+
+def test_git_walker(repo_path = 'G:/dev/django'):
+    gw = git_walker(repo_path)
     print("Number of commits: ", gw.number_of_commits())
     commits = gw.get_commits_hashes()
     print("Hashes of the commits: ", commits)
