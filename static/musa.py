@@ -8,8 +8,8 @@ class Musa:
 
     def __init__(self, x, t, beta_init_guess = 1):
         '''
-        :param x: - время прошедшее с момента последнего отказа
-        :param t: - массив, содержащий временя отказов
+        :param x: - time from the last error
+        :param t: - array, thath contains the times of errors
         :return:
         '''
         self._beta0 = lambda beta : self.n / (1 - np.exp(-beta * (self.tn + self.x)))
@@ -42,22 +42,21 @@ class Musa:
         return self.b1
 
     def func_mu(self, tau = None):
-        # Среднее количество отказов
+        # Mean number of errors
         func = self._mu #lambda tau: self.b0 * (1 - np.exp(-self.b1 * tau))
         if tau is None:
             tau = self.t[-1] + self.x
         return func(tau)
 
     def func_lambd(self, tau = None):
-        # Интенсивность отказов
+        # Intensity of errors
         func = self._lambd #tau: self.b0 * self.b1 * np.exp(-self.b1 * tau)
         if tau is None:
             tau = self.t[-1] + self.x
         return func(tau)
 
     def func_r(self, tau = None, i = None):
-        # TODO: Переделать эту фуикцнию. Нужно отказаться от индекса в массиве I и указывать время
-        # Функция надежности
+        # Reliability function
         if tau is None:
             tau = self.x
         if i is None:
@@ -132,7 +131,7 @@ def test_musa(plot_graph = False):
     assert musa.b0 == 13.569632291454864, "Wrong value of b0 : " + str(musa.b0)
     assert musa.b1 == 0.00601518822260904, "Wrong value of b1 : "  + str(musa.b1)
     assert musa.func_mu() == 10.0, "Wrong value of mu : " + str(musa.func_mu())
-    assert musa.func_lambd() == 0.0214720101186, "Wrong value of lambda : " +  str(musa.func_lambd()) # Странно, в каноническом пимере здесь 22
+    assert musa.func_lambd() == 0.0214720101186, "Wrong value of lambda : " +  str(musa.func_lambd()) # In bool here is 22
     assert musa.func_r() == 0.713867792842, "Wrong value of r : " + str(musa.func_r())
     print("Done")
 

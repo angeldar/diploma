@@ -135,5 +135,5 @@ def plot_musa_and_musa_okumoto():
 # musa_for_real_data()
 # musa_okumoto_for_real_data()
 # jelinski_moranda_for_real_data()
-print_failure_rate_for_jm()
-# plot_musa_and_musa_okumoto()
+# print_failure_rate_for_jm()
+plot_musa_and_musa_okumoto()

@@ -6,14 +6,11 @@ from scipy.optimize import fsolve
 class JelinskiMoranda:
 
     def __init__(self, X):
-        '''
-        t - произвольное время между обнаружением i-1 и i ошибок
-        phi - неизвестный коэффициенте (в ряде источников обозначен как K)
-        N - неизвестное общее число ошибок в ПО (в ряде источников обозначен как B)
-        m >= n+1 - число прогнозируемых (пока не обнаруженных ошибок)
-        Xi - интервал времени между соседними ошибками
-        :return:
-        '''
+        '''t - time from i-1 and i error
+        phi - unknoun coefficient, in some resources - K
+        N - unknon total number of errors in program, in some resources - B
+        m >= n+1 - number of errors, that are not found
+        Xi - time interval between closest errors'''
 
         self.X = X
         self.n = len(X)
@@ -41,21 +38,13 @@ class JelinskiMoranda:
         return self.N
 
     def func_phi(self): #+
-        '''
-        Коэффициент пропорциональности, показывающий вклад в интенсивность отказов
-        внесенный каждым отказом
-        :return:
-        '''
+        '''Coefficient, that shows the input to Intensivnost otkazor by each Otkaz'''
         self.phi = self.n / (self.N *\
                    sum(self.X) - sum([(i-1) * self.X[i-1] for i in range(1, len(self.X)+1)]))
         return self.phi
 
-    # Определение оценок
     def func_lambda(self, i = None): #+
-        '''
-        Интенсивность возникновения ошибок в ПО, после того, как в нем уже обнаружена (i-1) ошибка
-        :return:
-        '''
+        ''' Intensity of the errors, after i-1 error was found'''
         if i is None:
             i = self.n# + 1
         self.lambd = self.phi * (self.N - (i - 1))
@@ -69,9 +58,7 @@ class JelinskiMoranda:
         return res
 
     def func_f(self, i = None): #+
-        '''
-        Функция плотности отказов
-        '''
+        '''Function of the density of errors'''
         if i is None:
             i = self.n - 1
         res = self.phi * (self.N - (i - 1)) * np.exp(-self.phi * (self.N - (i - 1)) * self.X[i])
@@ -79,7 +66,7 @@ class JelinskiMoranda:
 
     def func_F(self, i = None): #+
         '''
-        Функция распределения ошибок
+        Function of distribution of the errors
         '''
         if i is None:
             i = self.n - 1
@@ -87,9 +74,7 @@ class JelinskiMoranda:
         return res
 
     def func_R(self, i = None): #+
-        '''
-        Функция надежности на i-м интервале
-        '''
+        '''Function of reliability on the i-th interval'''
         if i is None:
             i = self.n - 1
         res = 1.0 - self.func_F(i)
@@ -106,59 +91,20 @@ class JelinskiMoranda:
 
         print('func_n', self.func_n())
 
-
-    # def func_x(self, i = None):
-    #     '''
-    #     Среднее время до появления (i+1) ошибки
-    #     :return:
-    #     '''
-    #     if i is None:
-    #         i = self.n + 1
-    #     self.x = 1.0 / (self.phi * (self.N - self.n))
-    #     return self.x
-
-    # Коэффициенты
-    # def func_N(self): #+
-    #     '''
-    #     Неизвестное общее количество ошибок. В ряде источников N.
-    #     :return:
-    #     '''
-    #     self.N = self.m - 1
-    #     return self.N
-
-    # def func_a(self):
-    #     self.a = sum([i * self.X[i - 1] for i in range(1, self.n+1)]) / sum(self.X)
-    #     return self.a
-
-    # Не совсем канонично, но можно использовать
+    # Not canonical, but can be used
     def func_t(self):
-        '''
-        Время до окончания тестирования
-        :return:
-        '''
+        '''Time before end of testing'''
         self.t = 1.0 / self.phi * sum([1.0 / i for i in range(1, self.N - self.n + 1)])
         return self.t
 
     def func_n(self, tau = None):
         # TODO: TEST
-        '''
-        Функция среднего значения текущего количества отказов
-        '''
+        '''Function of mean value of errors'''
         if tau is None:
             tau = sum(self.X)
             print(tau)
         func = lambda tau: self.n * (1 - np.exp(-self.phi * tau))
         return func(tau)
-
-    # def odl_debug_print(self):
-    #     print('a: ', self.a)
-    #     print('m: ', self.m)
-    #     print('b: ', self.b)
-    #     print('k: ', self.k)
-    #     print('lambd: ', self.lambd)
-    #     print('x: ', self.x)
-    #     print('t: ', self.t)
-    #     print('n: ', self.func_n())
 
 # test_data = [3, 2, 10, 7, 14, 8, 5, 1, 6, 9, 13, 3, 5, 5, 9, 2, 24, 1, 9, 8, 11, 6, 8, 2, 9, 74, 14, 7, \
 #              22, 45, 3, 22, 4, 9, 3, 83, 6, 8, 2, 6]

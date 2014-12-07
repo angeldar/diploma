@@ -6,13 +6,10 @@ from scipy.optimize import fsolve
 class MusaOkumoto:
 
     def __init__(self, x, t, beta_init_guess = 0.0001):
-        '''
-        :param x: - время прошедшее с момента последнего отказа
-        :param t: - массив, содержащий временя отказов
-        :return:
-        '''
+        ''':param x: - time from the last error
+        :param t: - array with the times of erros'''
         # HACK: VERY IMPORTANT!
-        # Муса и Окумото накосячили в своей книге, там вместо tn должно быть (tn + x)
+        # Musa and Okumoto have mada the error in they book. Instead if tn must be(tn + x)
         self._beta0 = lambda beta, tn   : float(self.n) / (np.log(1 + beta * tn))
         self._lambd = lambda tau        : self.b0 * self.b1 / (self.b1 * tau + 1.0)
         self._mu    = lambda tau        : self.b0 * np.log(self.b1 * tau + 1)
@@ -26,10 +23,9 @@ class MusaOkumoto:
         self.func_beta1()
         self.func_beta0()
 
-
     def func_beta0(self):
         # VERY IMPORTANT!
-        # Муса и Окумото накосячили в своей книге, там вместо tn должно быть (tn + x)
+        # Musa and Okumoto have mada the error in they book. Instead if tn must be(tn + x)
         real_tn = self.tn + self.x
         func = self._beta0
         self.b0 = func(self.b1, real_tn)
@@ -37,33 +33,33 @@ class MusaOkumoto:
 
     def func_beta1(self):
         # VERY IMPORTANT!
-        # Муса и Окумото накосячили в своей книге, там вместо tn должно быть (tn + x)
+        # Musa and Okumoto have mada the error in they book. Instead if tn must be(tn + x)
         real_tn = (self.tn + self.x)
-        # Затруднительно вынести, из-за параметра real_tn и необходимости численно решить
+        # Hard to move from here - because of real and_tn need to solve numerical write here.
         func = lambda beta : - 1.0 / beta * sum([1.0 / (1.0 + beta * ti) for ti in self.t]) \
             + self.n * real_tn / ((1 + beta * real_tn) * np.log(1 + beta * real_tn))
         self.b1 = fsolve(func, self.beta_init_guess, maxfev = 10000)
         return self.b1
 
     def func_lambd(self, tau = None):
-        # Интенсивность отказов в момент времени tau
+        '''Intensity of errors at the time tau'''
         if tau is None:
             tau = self.t[-1] + self.x
         func = self._lambd
         return func(tau)
 
     def func_mu(self, tau = None):
-        # Среднее количество отказов
+        '''Mean number of errors'''
         if tau is None:
             tau = self.t[-1] + self.x
         func = self._mu
         return func(tau)
 
     def func_r(self, tau = None, deltat = None):
-        # Функция надежности
-        if tau is None: # если момент времени не задан - использовать последний отказ
+        '''The function of reliability'''
+        if tau is None: # if the time is not set - use the time of last error
             tau = self.t[-1]
-        if deltat is None: # если deltat не задан - использовать время от последнего отказа
+        if deltat is None: # if deltat is not set - use the time of last error
             deltat = self.x
 
         func = self._r
