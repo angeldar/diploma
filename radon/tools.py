@@ -129,14 +129,6 @@ def merge_files(files):
     filename = FILE_DIR + "\\" + FILE_NAME
     with open(filename, 'w+') as result_file:
         for file in files:
-            # try:
-            #     tmp_file = open(file, 'r')
-            #     content = tmp_file.read()
-            #     tmp_file.close()
-            #     convert_old_version_file(file)
-            # except:
-            #     print("Error in file: " + file)
-
             with open(file, 'r') as curr_file:
                 try:
                     content = curr_file.read()
@@ -144,79 +136,4 @@ def merge_files(files):
                     result_file.write(content + "\n\r")
                 except:
                     print("Error in file: " + file)
-    # old_version_tool(filename)
     return (FILE_DIR, FILE_NAME)
-
-def convert_old_version_file(filename):
-    converter_path = 'F:/soft/coding/python3/Tools/Scripts/2to3.py'
-
-    print("Converting file: ", filename)
-
-    p = subprocess.Popen(['python', converter_path, '-w', filename], stdout = subprocess.PIPE,
-                 stderr = subprocess.PIPE, shell=False)
-    p.communicate()
-
-def old_version_tool(content):
-    print("Converter")
-    # converter_path = 'F:/soft/coding/python3/Tools/Scripts/2to3.py'
-    # p = subprocess.Popen(['python', converter_path, '-w', file], stdout = subprocess.PIPE,
-    #                          stderr = subprocess.PIPE, shell=False)
-
-    regex = re.compile("except\W[_a-zA-Z0-9\.]+,\W[_a-zA-Z\.]+:")
-    regex_print = re.compile("print [\'\"].+[\'\"]")
-
-    regex_string1 = re.compile("\"[\"].+?\"")
-    regex_string2 = re.compile("\'[\'].+?\'")
-
-    if regex.search(content) is not None:
-        print("old version change")
-    content = regex.sub("except Error as OldPythonVersionError:", content)
-    content = regex_print.sub("print()", content)
-
-    content = regex_string1.sub("\"\"", content)
-    content = regex_string2.sub("\'\'", content)
-    return content
-
-# def cc_to_terminal(results, show_complexity, min, max, total_average):
-#     '''Transfom Cyclomatic Complexity results into a 3-elements tuple:
-#         ``(res, total_cc, counted)``
-#     `res` is a list holding strings that are specifically formatted to be
-#     printed to a terminal.
-#     `total_cc` is a number representing the total analyzed cyclomatic
-#     complexity.
-#     `counted` holds the number of the analyzed blocks.
-#     If *show_complexity* is `True`, then the complexity of a block will be
-#     shown in the terminal line alongside its rank.
-#     *min* and *max* are used to control which blocks are shown in the resulting
-#     list. A block is formatted only if its rank is `min <= rank <= max`.
-#     If *total_average* is `True`, the `total_cc` and `counted` count every
-#     block, regardless of the fact that they are formatted in `res` or not.
-#     '''
-#     res = []
-#     counted = 0
-#     total_cc = .0
-#     for line in results:
-#         ranked = cc_rank(line.complexity)
-#         if min <= ranked <= max:
-#             total_cc += line.complexity
-#             counted += 1
-#             res.append(_format_line(line, ranked, show_complexity))
-#         elif total_average:
-#             total_cc += line.complexity
-#             counted += 1
-#     return res, total_cc, counted
-
-
-# def _format_line(block, ranked, show_complexity=False):
-#     '''Format a single block as a line.
-#     *ranked* is the rank given by the `~radon.complexity.rank` function. If
-#     *show_complexity* is True, then the complexity score is added alongside.
-#     '''
-#     letter_colored = LETTERS_COLORS[block.letter] + block.letter
-#     rank_colored = RANKS_COLORS[ranked] + ranked
-#     compl = '' if not show_complexity else ' ({0})'.format(block.complexity)
-#     return TEMPLATE.format(BRIGHT, letter_colored, block.lineno,
-#                            block.col_offset, block.fullname, rank_colored,
-#                            compl, reset=RESET)
-
-###########

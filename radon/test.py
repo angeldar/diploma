@@ -1,7 +1,7 @@
 from radon.cli_init import cc, raw, mi, log
 from radon.metrics import  h_visit
 
-from radon.tools import _open, iter_filenames, merge_files, convert_old_version_file
+from radon.tools import _open, iter_filenames, merge_files
 
 from git_walker import git_walker
 
@@ -86,6 +86,7 @@ def halstead_from_repo():
         print(date, holst)
 
 def halstead_for_file_from_repo(filenames):
+    raise "Not tested"
     REPO_PATH = 'G:/dev/django'
     RES_FILE_NAME = 'G:/django_holster.txt'
     gw = git_walker(REPO_PATH)
@@ -97,7 +98,6 @@ def halstead_for_file_from_repo(filenames):
         gw.reset_to_commit(hash)
         for file in filenames:
             try:
-                convert_old_version_file(file)
                 holst = halstead_test(file)
                 print(file, holst)
             except:
