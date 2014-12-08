@@ -55,9 +55,9 @@ def musa_okumoto_for_real_data():
     m.plot_mu_and_errors()
 
 def jelinski_moranda_for_real_data():
-    data = read_data('datasets/journal_of_computer_application_dataset.txt')
+    # data = read_data('datasets/journal_of_computer_application_dataset.txt')
     # data = read_data('datasets/test_commercial_data.txt')
-    # data = read_data('datasets/dataset_6.txt')
+    data = read_data('datasets/dataset_6.txt')
     times_of_falls = data[:-2]
     j = JelinskiMoranda(times_of_falls)
     j.debug_print()
@@ -134,6 +134,6 @@ def plot_musa_and_musa_okumoto():
 
 # musa_for_real_data()
 # musa_okumoto_for_real_data()
-# jelinski_moranda_for_real_data()
+jelinski_moranda_for_real_data()
 # print_failure_rate_for_jm()
-plot_musa_and_musa_okumoto()
+# plot_musa_and_musa_okumoto()

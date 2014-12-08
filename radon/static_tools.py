@@ -1,8 +1,6 @@
 from radon.cli_init import cc
 from radon.metrics import  h_visit
-
 from radon.tools import _open, iter_filenames, merge_files
-
 from git_walker import git_walker
 
 def merge_files_in_folders(folders = ['G:\\dev\\django']):
@@ -26,38 +24,37 @@ def get_ciclomatic_for_folder(path):
                     ranks[func['rank']] += 1
     return ranks
 
-def get_cc_for_repo():
-    REPO_PATH = 'G:/dev/django'
-    res_file_name='G:/django_p2.txt'
-    gw = git_walker(REPO_PATH)
+def get_cc_for_repo(repo_path = 'G:/dev/django', res_filename = 'G:/cc_django.csv', proj_name = 'django'):
+    gw = git_walker(repo_path)
     path = gw.create_path(20)
-    open(res_file_name,'w+').close()
+    open(res_filename, 'w+').close()
+    with open(res_filename, 'a+') as f:
+        f.write("date\tA\tB\tC\tD\tE\tF\tproj_name\n")
     for hash in reversed(path):
         date = gw.get_commit_date(hash)
         gw.reset_to_commit(hash)
         print(date)
-        ranks = get_ciclomatic_for_folder([REPO_PATH])
-        res = "{0}\t{1}\t{2}\t{3}\t{4}\t{5}\n".format(
-            ranks['A'], ranks['B'], ranks['C'], ranks['D'], ranks['E'], ranks['F'])
+        ranks = get_ciclomatic_for_folder([repo_path])
+        res = "{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\n".format(
+            date, ranks['A'], ranks['B'], ranks['C'], ranks['D'], ranks['E'], ranks['F'], proj_name)
         print(res)
-        with open(res_file_name, 'a+') as f:
-            f.write(date + '\t' + res)
+        with open(res_filename, 'a+') as f:
+            f.write(res)
+    gw.pull()
 
 # Halstead metrics
-def get_halstead_for_file(path):
+def get_halstead_for_file(filepath):
     print("Halstead metric")
-    res = []
-    with _open(path) as fobj:
+    with _open(filepath) as fobj:
         halstead = h_visit(fobj.read())
-        res.append(halstead)
-    return res
+        return halstead
 
-def get_halstead_for_repo():
-    REPO_PATH = 'G:/dev/django'
-    RES_FILE_NAME = 'G:/django_holster.txt'
-    gw = git_walker(REPO_PATH)
+def get_halstead_for_repo(repo_path = 'G:/dev/django', res_filename = 'G:/django_halstead.csv', proj_name = 'django'):
+    gw = git_walker(repo_path)
     path = gw.create_path(20)
-    open(RES_FILE_NAME, 'w+').close()
+    open(res_filename, 'w+').close()
+    with open(res_filename, 'a+') as f:
+        f.write("date\tlength\tvolume\tdifficulty\teffort\ttime\tbugs\tproj_name\n")
     for hash in reversed(path):
         date = gw.get_commit_date(hash)
         print(date)
@@ -65,11 +62,18 @@ def get_halstead_for_repo():
         (file_dir, file_name) = merge_files_in_folders(folders = ['G:\\dev\\django'])
         holst = get_halstead_for_file(file_dir + '\\' + file_name)
         print(date, holst)
+        res = "{0}\t{1}\t{2:.2f}\t{3:.2f}\t{4:.2f}\t{5:.2f}\t{6:.2f}\t{7}\n".format(
+            date, holst.length, holst.volume, holst.difficulty, holst.effort, holst.time, holst.bugs, proj_name)
+
+        with open(res_filename, 'a+') as f:
+            f.write(res)
+
+    gw.pull()
 
 if __name__ == '__main__':
     print('Start')
 
-    # get_cc_from_repo()
-    get_halstead_for_repo()
+    get_cc_for_repo()
+    # get_halstead_for_repo()
 
     print('End')
