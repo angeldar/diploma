@@ -21,15 +21,21 @@ class JelinskiMoranda:
 
 
     def func_left(self, cur_n): #+
-        res = sum([1.0 / (cur_n - (i - 1)) for i in range(1, self.n+1)])
+        res = sum([1.0 / (cur_n - i) for i in range(0, self.n)])
         return res
 
     def func_right(self, cur_n): #+
         # self.g = self.n / (cur_n - self.a)
         res = self.n / (cur_n - \
                 (1.0 / sum(self.X)) *\
-                sum([(i - 1) * self.X[i-1] for i in range(1, len(self.X)+1)]))
+                sum([i * self.X[i] for i in range(0, len(self.X))]))
         return res
+
+    def func_phi(self): #+
+        '''Coefficient, that shows the input to Intensivnost otkazor by each Otkaz'''
+        self.phi = self.n / (self.N *\
+                   sum(self.X) - sum([(i) * self.X[i] for i in range(0, len(self.X))]))
+        return self.phi
 
     def find_N(self): #+
         N_init_guess = self.n + 1
@@ -37,31 +43,25 @@ class JelinskiMoranda:
         self.N = np.ceil(fsolve(func, N_init_guess))
         return self.N
 
-    def func_phi(self): #+
-        '''Coefficient, that shows the input to Intensivnost otkazor by each Otkaz'''
-        self.phi = self.n / (self.N *\
-                   sum(self.X) - sum([(i-1) * self.X[i-1] for i in range(1, len(self.X)+1)]))
-        return self.phi
-
     def func_lambda(self, i = None): #+
         ''' Intensity of the errors, after i-1 error was found'''
         if i is None:
             i = self.n# + 1
-        self.lambd = self.phi * (self.N - (i - 1))
+        self.lambd = self.phi * (self.N - (i))
         return self.lambd
 
     def func_MTTF(self, i = None): #+
         # Mean Time To Failure
         if i is None:
             i = self.n
-        res = 1.0 / (self.phi * (self.N - (i - 1)))
+        res = 1.0 / (self.phi * (self.N - (i)))
         return res
 
     def func_f(self, i = None): #+
         '''Function of the density of errors'''
         if i is None:
             i = self.n - 1
-        res = self.phi * (self.N - (i - 1)) * np.exp(-self.phi * (self.N - (i - 1)) * self.X[i])
+        res = self.phi * (self.N - i) * np.exp(-self.phi * (self.N - (i)) * self.X[i])
         return res
 
     def func_F(self, i = None): #+
@@ -70,7 +70,7 @@ class JelinskiMoranda:
         '''
         if i is None:
             i = self.n - 1
-        res = 1.0 - np.exp(-self.phi * (self.N - (i - 1)) * self.X[i])
+        res = 1.0 - np.exp(-self.phi * (self.N - (i)) * self.X[i])
         return res
 
     def func_R(self, i = None): #+

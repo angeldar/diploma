@@ -13,7 +13,7 @@ def read_data(filename):
 
 def musa_for_real_data():
     # data = read_data('test_commercial_data.txt')
-    data = read_data('dataset_6.txt')
+    data = read_data('datasets/dataset_6.txt')
     for i in range(1, len(data)):
         data[i] += data[i-1]
     times_of_falls = data[:-1]
@@ -23,22 +23,10 @@ def musa_for_real_data():
     # m.debug_plot_b1(-0.000001, 0.000001, 1000)
     print('lambd: ', m.func_lambd())
     print('r  ', m.func_r())
-    # m.plot_func(1, 10000, 1000)
-    m.plot_mu_and_errors()
+    m.plot_func(1, 10000, 1000)
+    # m.plot_mu_and_errors()
     # For commercial data
     #b0 = [ 843.97619457] b1 = [  9.85557815e-08]
-
-    # m = Musa(times_of_falls[i-1] - times_of_falls[i-2], times_of_falls[:i-1])
-    # times_of_falls = data
-    # res = []
-    # for i in range(2, len(times_of_falls)+1):
-    #     m = Musa(times_of_falls[i-1] - times_of_falls[i-2], times_of_falls[:i-1])
-    #     print("Test: {0}".format(i-1))
-    #     print("Time: {0}".format(times_of_falls[i-1] - times_of_falls[i-2]))
-    #     print("Data: {0}".format(times_of_falls[:i]))
-    #     print("Res: {0}\n===\n".format(m.mu()))
-    #     res.append(m.mu()[0])
-    # print(res)
 
 def musa_okumoto_for_real_data():
     # data = read_data('dataset_6.txt')
@@ -55,14 +43,22 @@ def musa_okumoto_for_real_data():
     m.plot_mu_and_errors()
 
 def jelinski_moranda_for_real_data():
-    # data = read_data('datasets/journal_of_computer_application_dataset.txt')
+    data = read_data('datasets/journal_of_computer_application_dataset.txt')
     # data = read_data('datasets/test_commercial_data.txt')
-    data = read_data('datasets/dataset_6.txt')
-    times_of_falls = data[:-2]
+    # data = read_data('datasets/dataset_6.txt')
+    times_of_falls = data
     j = JelinskiMoranda(times_of_falls)
     j.debug_print()
 
     import matplotlib.pyplot as plt
+
+    # Test plot
+    # data_plot = [[],[]]
+    # for i in range(len(times_of_falls)):
+    #     data_plot[0].append(i)
+    #     data_plot[1].append(j.func_R(i))
+    # plt.plot(data_plot[0], data_plot[1])
+
     # Plot real errors
     for i in range(1, len(data)):
         data[i] += data[i-1]

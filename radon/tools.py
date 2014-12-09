@@ -8,7 +8,7 @@ import xml.etree.cElementTree as et
 from contextlib import contextmanager
 from radon.visitors import Function
 from radon.complexity import cc_rank
-import subprocess
+import ast
 
 @contextmanager
 def _open(path):
@@ -119,7 +119,7 @@ def dict_to_xml(results):
             file.text = filename
     return et.tostring(ccm).decode('utf-8')
 
-def merge_files(files):
+def merge_files(files, only_norm_files = True):
     '''Merge :files: into one .py file for future analise of hole project.
     '''
     FILE_DIR = "G:\\TEMP"
@@ -130,10 +130,19 @@ def merge_files(files):
     with open(filename, 'w+') as result_file:
         for file in files:
             with open(file, 'r') as curr_file:
+                addToRes = True
                 try:
                     content = curr_file.read()
-                    result_file.write("### " + file + "\n\r")
-                    result_file.write(content + "\n\r")
+                    if only_norm_files:
+                        try:
+                            ast.parse(content)
+                        except SyntaxError:
+                            print("Error in parsing file: ", file)
+                            addToRes = False
+                    if not only_norm_files or (only_norm_files and  addToRes):
+                        result_file.write("### " + file + "\n\r")
+                        # content = re.sub('#.*\-\*\-.+\-\*-', "\n", content)
+                        result_file.write(content + "\n\r")
                 except:
                     print("Error in file: " + file)
     return (FILE_DIR, FILE_NAME)

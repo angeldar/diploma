@@ -3,6 +3,9 @@ from radon.metrics import  h_visit
 from radon.tools import _open, iter_filenames, merge_files
 from git_walker import git_walker
 
+import shutil
+import os
+
 def merge_files_in_folders(folders = ['G:\\dev\\django']):
     # VERY IMPORTANT - iter_filenames folders must be an ARRAY of string, not single string
     filenames = []
@@ -49,7 +52,8 @@ def get_halstead_for_file(filepath):
         halstead = h_visit(fobj.read())
         return halstead
 
-def get_halstead_for_repo(repo_path = 'G:/dev/django', res_filename = 'G:/django_halstead.csv', proj_name = 'django'):
+def get_halstead_for_repo(repo_path = 'G:/dev/django', res_filename = 'G:/django_halstead.csv', proj_name = 'django',
+                          exclude = []):
     gw = git_walker(repo_path)
     path = gw.create_path(20)
     open(res_filename, 'w+').close()
@@ -59,7 +63,17 @@ def get_halstead_for_repo(repo_path = 'G:/dev/django', res_filename = 'G:/django
         date = gw.get_commit_date(hash)
         print(date)
         gw.reset_to_commit(hash)
-        (file_dir, file_name) = merge_files_in_folders(folders = ['G:\\dev\\django'])
+        # Remove folder with docs
+        for folder in exclude:
+            try:
+                print("remove: ", folder)
+                if (os.path.isdir(folder)):
+                    shutil.rmtree(folder)
+                else:
+                    os.remove(folder)
+            except:
+                print("error: can't remove ", folder)
+        (file_dir, file_name) = merge_files_in_folders(folders = [repo_path])
         holst = get_halstead_for_file(file_dir + '\\' + file_name)
         print(date, holst)
         res = "{0}\t{1}\t{2:.2f}\t{3:.2f}\t{4:.2f}\t{5:.2f}\t{6:.2f}\t{7}\n".format(
@@ -73,7 +87,8 @@ def get_halstead_for_repo(repo_path = 'G:/dev/django', res_filename = 'G:/django
 if __name__ == '__main__':
     print('Start')
 
-    get_cc_for_repo()
-    # get_halstead_for_repo()
+    # get_cc_for_repo('G:/dev/bottle', 'G:/bottle_cc.csv', 'bottle')
+    get_halstead_for_repo('G:/dev/bottle', 'G:/bottle_halstead.csv', 'bottle', ['G:/dev/bottle/test/test_importhook.py',
+                                                                             'G:/dev/bottle/test/test_wsgi.py'])
 
     print('End')

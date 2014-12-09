@@ -41,3 +41,17 @@ ggplot(aes(x = date), data = django) +
   ylab("Errors") +
   ggtitle("Errors in Django repo during time.")
 
+### Hole dataset cc
+d <- read.csv('hole_cc.csv', sep = '\t')
+head(d)
+d$date <- as.Date(d$date, "%Y-%m-%d")
+
+ggplot(aes(x = date, y = D + E + F), data = d) +
+  geom_line(aes(color = proj_name))
+
+### Hole dataset halst
+d <- read.csv('hole_halstead.csv', sep = '\t')
+d$date <- as.Date(d$date, "%Y-%m-%d")
+
+ggplot(aes(x = date, y = bugs), data = d) +
+  geom_line(aes(color = proj_name, linetype = proj_name))
