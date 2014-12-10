@@ -18,7 +18,7 @@ class Musa:
                              (np.exp((self.tn + self.x) * beta)  - 1) - self.sum_t
         self._mu    = lambda tau: self.b0 * (1 - np.exp(-self.b1 * tau))
         self._lambd = lambda tau: self.b0 * self.b1 * np.exp(-self.b1 * tau)
-        self._r     = lambda tau, i: np.exp(-self.b0 * np.exp(-self.b1 * self.t[i]) * (1 - np.exp(-self.b1 * tau)))
+        self._r     = lambda tau, deltat: np.exp(-self.b0 * np.exp(-self.b1 * tau) * (1 - np.exp(-self.b1 * deltat)))
 
         self.x = x
         self.t = t
@@ -35,9 +35,7 @@ class Musa:
         return self.b0
 
     def func_beta1(self):
-        func = self._beta1 #lambda beta : self.n / beta -\
-                            #              (self.n * (self.tn + self.x)) /\
-                            #              (np.exp((self.tn + self.x) * beta)  - 1) - self.sum_t
+        func = self._beta1
         self.b1 = fsolve( func, self.beta_init_guess)
         return self.b1
 
@@ -53,17 +51,21 @@ class Musa:
         func = self._lambd #tau: self.b0 * self.b1 * np.exp(-self.b1 * tau)
         if tau is None:
             tau = self.t[-1] + self.x
+        print("b0 ", self.b0)
+        print("b1 ", self.b1)
+        print("tau ", tau)
         return func(tau)
 
-    def func_r(self, tau = None, i = None):
+    def func_r(self, tau = None, deltat = None):
         # Reliability function
         if tau is None:
-            tau = self.x
-        if i is None:
-            i = self.n - 1
+            tau = self.t[-1] - self.t[-2]
+        if deltat is None:
+            deltat = self.x
+        print(tau, deltat)
         # old version: lambda tau: np.exp(-self.b0 * np.exp(-self.b1 * self.t[i]) * (1 - np.exp(-self.b1 * tau)))
         func = self._r
-        return func(tau, i)
+        return func(tau, deltat)
 
     def debug_output(self):
         print("Musa model:\n"
@@ -110,7 +112,7 @@ class Musa:
     def plot_func(self, minx=-0.0001, maxx=2, step=2000):
         import matplotlib.pyplot as plt
         tau = np.linspace(minx, maxx, step)
-        func = self._mu
+        func = self._lambd
         plt.plot(tau, func(tau))
         plt.xlabel("tau")
         plt.ylabel("expression value")
@@ -148,4 +150,5 @@ def dinamic_musa_test():
         res.append(m.func_mu()[0])
     print(res)
 
-# test_musa()
+if __name__ == '__main__':
+    test_musa()
