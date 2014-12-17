@@ -37,9 +37,10 @@ ggplot(aes(x = date), data = django) +
   geom_point(aes(y = D), shape = 6) +
   geom_line(aes(y = D+E+F), color = 'black') +
   geom_point(aes(y = D+E+F), shape = 3) +
-  xlab("Time") +
-  ylab("Errors") +
-  ggtitle("Errors in Django repo during time.")
+  xlab("Дата") +
+  ylab("Количество файлов") +
+  ggtitle("Цикломатическая сложность в Django.") +
+  theme_bw()
 
 ### Hole dataset cc
 d <- read.csv('hole_cc.csv', sep = '\t')
@@ -47,11 +48,47 @@ head(d)
 d$date <- as.Date(d$date, "%Y-%m-%d")
 
 ggplot(aes(x = date, y = D + E + F), data = d) +
-  geom_line(aes(color = proj_name))
+  geom_line(aes(color = proj_name, linetype = proj_name), size = 1) +
+  geom_point(aes(color = proj_name, shape = proj_name)) +
+  xlab("Дата") +
+  ylab("Количество файлов") +
+  ggtitle("Количество методов с высокой цикломатической сложностью") +
+  theme_bw()
 
 ### Hole dataset halst
 d <- read.csv('hole_halstead.csv', sep = '\t')
 d$date <- as.Date(d$date, "%Y-%m-%d")
 
 ggplot(aes(x = date, y = bugs), data = d) +
-  geom_line(aes(color = proj_name, linetype = proj_name))
+  geom_line(aes(color = proj_name, linetype = proj_name), size = 0.8) +
+  geom_point(aes(color = proj_name, shape = proj_name)) +
+  xlab("Дата") +
+  ylab("Ошибки") +
+  ggtitle("Количество ошибок по метрике Холстеда") +
+  theme_bw()
+  
+
+
+
+########### Dinamic models
+d <- read.csv('dynamic_models.csv', sep = '\t')
+head(d)
+ggplot(aes(x = tau), data = d) +
+  geom_line(aes(y = real_error), color = 'black') +
+  geom_line(aes(y = musa),  color = 'red') +
+  geom_line(aes(y = musa_okumoto), , color = 'green') +
+  geom_line(aes(y = jm), color = 'blue')
+
+
+d <- read.csv('jm_model.csv', sep = '\t')
+head(d)
+ggplot(aes(x = i), data = d) +
+  geom_line(aes(y = real_falls, color = ), color = 'black') +
+  geom_line(aes(y = mttf), color = 'red', linetype = 2) +
+  xlab("Отказы") +
+  ylab("Время до отказа") +
+  theme_bw() +
+  scale_shape_discrete(name  ="Payer",
+                       breaks=c("Female", "Male"),
+                       labels=c("Woman", "Man"))
+

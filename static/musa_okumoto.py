@@ -6,6 +6,7 @@ from scipy.optimize import fsolve
 class MusaOkumoto:
 
     def __init__(self, x, t, beta_init_guess = 0.0001):
+        # TODO: Refactor to take time between falls, and convert to time of falls
         ''':param x: - time from the last error
         :param t: - array with the times of erros'''
         # HACK: VERY IMPORTANT!
@@ -76,28 +77,6 @@ class MusaOkumoto:
               "b0: {5}\n"
               "b1: {6}".format(self.n, self.tn, self.x, self.t, self.sum_t, self.b0, self.b1))
 
-    def plot_mu_and_errors(self):
-        import matplotlib.pyplot as plt
-
-        # Plot real errors
-        errors_count = [[],[]]
-        count = 1
-        for val in self.t:
-            errors_count[0].append(val)
-            errors_count[1].append(count)
-            count += 1
-        plt.plot(errors_count[0], errors_count[1])
-
-        # Plot model errors
-        tau = np.linspace(0, 1.2 * errors_count[0][-1], 1000)
-        func = self._mu
-        plt.plot(tau, func(tau))
-
-        plt.xlabel("tau")
-        plt.ylabel("expression value")
-        plt.grid()
-        plt.show()
-
 def test_musa():
     print("Musa model test: ")
     time_passed = 15
@@ -111,4 +90,5 @@ def test_musa():
     print("r: {0}".format(m.func_r()))          # [ 0.67458381]
     print("Done")
 
-# test_musa()
+if __name__ == '__main__':
+    test_musa()
