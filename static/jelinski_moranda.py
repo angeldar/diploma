@@ -98,7 +98,6 @@ class JelinskiMoranda:
         return self.t
 
     def func_n(self, tau = None):
-        # TODO: TEST
         '''Function of mean value of errors'''
         if tau is None:
             tau = sum(self.X)

@@ -9,7 +9,7 @@ class Musa:
         # TODO: Refactor to take time between falls, and convert to time of falls
         '''
         :param x: - time from the last error
-        :param t: - array, thath contains the times of errors
+        :param t: - array, that contains the times of errors
         :return:
         '''
         self._beta0 = lambda beta : self.n / (1 - np.exp(-beta * (self.tn + self.x)))
