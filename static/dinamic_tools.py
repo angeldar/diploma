@@ -37,13 +37,20 @@ def musa_okumoto_for_real_data(path_to_data):
 
 ## Jelinsky-Morands plots
 
-def jelinski_moranda_MTTF(path_to_data):
+def jelinski_moranda_MTTF(path_to_data, file_to_write_data = ''):
     data = dp.read_data(path_to_data)
     times_of_falls = data[:]
     j = JelinskiMoranda(times_of_falls)
     x = [i for i in range(len(times_of_falls))]
-    MTTF = j.func_MTTF(x)
-    plot.add_xy_plot(x, MTTF)           # style '--', label = 'JM-model error'
+    y = [j.func_MTTF(i) for i in x]
+
+    if file_to_write_data:
+        with open(file_to_write_data, 'w+') as f:
+            f.write("i\treal_falls\tmttf\n")
+            for i in range(len(times_of_falls)):
+                f.write("{0}\t{1}\t{2:.2f}\n".format(i, times_of_falls[i], y[i][0]))
+
+    plot.add_xy_plot(x, y)           # style '--', label = 'JM-model error'
     plot.add_xy_plot(x, times_of_falls) # style label = 'Real error'
     plot.xlabel("Error")
     plot.ylabel("Mean time error")
@@ -80,23 +87,21 @@ def plot_musa_and_musa_okumoto(path_to_data):
     plot.grid()
     plot.show()
 
-def plot_all_models(path_to_data):
+def plot_all_models(path_to_data, init_guess = 0.000001):
     data = dp.read_data(path_to_data)
     time_passed = data[-1] - data[-2]
     jm_data = data[:]
     times_of_falls = dp.convert_time_between_errors_to_time_of_errors(data)[:-1]
-    init_guess = 0.000001
     time_of_last_error = dp.time_of_last_error(data)
     m = Musa(time_passed, times_of_falls, init_guess)
     mo = MusaOkumoto(time_passed, times_of_falls, init_guess)
     j = JelinskiMoranda(jm_data)
-    plot.add_errors_plot(data) # label = 'Real error'
-    plot.add_func_plot(m._mu, 0, time_of_last_error, 100)     # style : '--', label = "Musa"
-    plot.add_func_plot(mo._mu, 0, time_of_last_error, 100)    # style : '-.', label = "Musa - Okumoto"
-    plot.add_func_plot(j.func_n, 0, time_of_last_error, 100)  # style : ':',  label = "Jelinski - Moranda"
+    plot.add_errors_plot(data, {'label': 'Real errors'}) # label = 'Real error'
+    plot.add_func_plot(m._mu, 0, 1*time_of_last_error, 100, {'label': "Musa"})     # style : '--', label = "Musa"
+    plot.add_func_plot(mo._mu, 0, 1*time_of_last_error, 100, {'label': "Musa-Okumoto"})    # style : '-.', label = "Musa - Okumoto"
+    plot.add_func_plot(j.func_n, 0, 1*time_of_last_error, 100, {'label': 'Jelinsky-Moranda'})  # style : ':',  label = "Jelinski - Moranda"
 
-    # plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05),
-    #       fancybox=True, shadow=True, ncol=5)
+    plot.legend()
 
     # with open("G:/dynamic_models.csv", 'w+') as f:
     #     f.write('tau\treal_error\tmusa\tmusa_okumoto\tjm\n')
@@ -111,4 +116,13 @@ def plot_all_models(path_to_data):
     plot.show()
 
 if __name__ == '__main__':
-    plot_all_models('./datasets/dataset_6.txt')
+    # jelinski_moranda_MTTF('./datasets/dataset_6.txt')
+    # plot_all_models('./datasets/dataset_6.txt')
+    # plot_all_models('./datasets/journal_of_computer_application_dataset.txt')
+    # plot_all_models('./datasets/dataset_40.txt')
+
+    jelinski_moranda_MTTF('./datasets/dataset_6.txt', 'G:/jm_6.csv')
+    jelinski_moranda_MTTF('./datasets/journal_of_computer_application_dataset.txt', 'G:/jm_journal_of_ca.csv')
+    jelinski_moranda_MTTF('./datasets/dataset_40.txt', 'G:/jm_40.csv')
+
+    # plot_all_models('./datasets/test_commercial_data.txt', init_guess = 0.00000001)

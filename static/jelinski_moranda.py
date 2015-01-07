@@ -47,7 +47,7 @@ class JelinskiMoranda:
         ''' Intensity of the errors, after i-1 error was found'''
         if i is None:
             i = self.n# + 1
-        self.lambd = self.phi * (self.N - (i))
+        self.lambd = self.phi * (self.N - i)
         return self.lambd
 
     def func_MTTF(self, i = None): #+
