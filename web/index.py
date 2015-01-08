@@ -1,5 +1,7 @@
 import bottle
 from bottle import Bottle, request, response, route, run, template, static_file
+from static import dinamic_tools as dt
+import json
 
 app = Bottle()
 
@@ -15,14 +17,17 @@ def send_css(filename):
 def send_js(filename):
     return static_file(filename, root='static/js', mimetype='text/javascript')
 
-
 @app.hook('after_request')
 def enable_cors():
     response.headers['Access-Control-Allow-Origin'] = '*'
 
-@route('/ajax', method='GET')
-def get_ajax():
-    return {"value" : "string"}
+@route('/musa', method='GET')
+def get_musa():
+    musa = dt.get_musa_data('G:/dev/diploma/static/datasets/dataset_6.txt')
+    x_mu = musa['mu']['x']
+    y_mu = musa['mu']['y']
+    print(x_mu, y_mu)
+    return json.dumps({'x' : x_mu, 'y' : y_mu})
 
 @route('/')
 def index():

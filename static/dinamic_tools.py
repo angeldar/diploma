@@ -3,23 +3,26 @@ from static.musa_okumoto import MusaOkumoto
 from static.jelinski_moranda import  JelinskiMoranda
 import static.plot as plot
 import static.data_processing as dp
+import numpy as np
 
 # Musa plots
 
-def musa_for_real_data(path_to_data):
+def get_musa_data(path_to_data):
     data = dp.read_data(path_to_data)
     time_passed = data[-1] - data[-2]
     errors = dp.convert_time_between_errors_to_time_of_errors(data)
     times_of_falls = errors[:-1]
+    time_of_last_error = times_of_falls[-1]
     init_guess = 0.000001
     m = Musa(time_passed, times_of_falls, init_guess)
-    plot.add_func_plot(m._lambd, 1, 10000, 1000)
-    plot.grid()
-    plot.show()
-    plot.add_errors_plot(data)
-    plot.add_func_plot(m._mu, 0, dp.time_of_last_error(data), 1000)
-    plot.grid()
-    plot.show()
+
+    x_mu = np.linspace(1, 1.2 * time_of_last_error, 20)
+    y_mu = m._mu(x_mu)
+    x_mu = [int(i) for i in x_mu]
+    y_mu = [int(i) for i in y_mu]#[round(float(i),5) for i in y_mu]
+    return {'mu' : {
+        'x' : x_mu,
+        'y' :y_mu}}
 
 # Musa-Okumoto plots
 
@@ -116,13 +119,14 @@ def plot_all_models(path_to_data, init_guess = 0.000001):
     plot.show()
 
 if __name__ == '__main__':
+    get_musa_data('./datasets/dataset_6.txt')
     # jelinski_moranda_MTTF('./datasets/dataset_6.txt')
-    # plot_all_models('./datasets/dataset_6.txt')
+    plot_all_models('./datasets/dataset_6.txt')
     # plot_all_models('./datasets/journal_of_computer_application_dataset.txt')
     # plot_all_models('./datasets/dataset_40.txt')
 
-    jelinski_moranda_MTTF('./datasets/dataset_6.txt', 'G:/jm_6.csv')
-    jelinski_moranda_MTTF('./datasets/journal_of_computer_application_dataset.txt', 'G:/jm_journal_of_ca.csv')
-    jelinski_moranda_MTTF('./datasets/dataset_40.txt', 'G:/jm_40.csv')
+    # jelinski_moranda_MTTF('./datasets/dataset_6.txt', 'G:/jm_6.csv')
+    # jelinski_moranda_MTTF('./datasets/journal_of_computer_application_dataset.txt', 'G:/jm_journal_of_ca.csv')
+    # jelinski_moranda_MTTF('./datasets/dataset_40.txt', 'G:/jm_40.csv')
 
     # plot_all_models('./datasets/test_commercial_data.txt', init_guess = 0.00000001)
