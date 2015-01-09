@@ -26,17 +26,26 @@ def get_musa():
     musa = dt.get_musa_data('G:/dev/diploma/static/datasets/dataset_6.txt')
     return json.dumps(musa)
 
-@route('/musa-okumoto')
+@route('/jelinsky-moranda-model')
 def musa_okumoto():
-    return "Musa-Okumoto"
+    return template('index', template_name = 'jelinsky_moranda.tpl', current_view = 'jelinsky_moranda')
 
-@route('/static_models')
+@route('/musa-model')
+def musa_model():
+    return template('index', template_name = 'musa.tpl', current_view = 'musa')
+
+@route('/musa-okumoto-model')
+def musa_okumoto():
+    return template('index', template_name = 'musa_okumoto.tpl', current_view = 'musa_okumoto')
+
+@route('/static-models')
 def static_models():
-    return "Jelinski-Moranda"
+    return template('index', template_name = 'static_models.tpl', current_view = 'static_models')
 
 @route('/')
+@route('/index')
+@route('/overview')
 def index():
-    return static_file('index.html', root='views')
-    # return "Hello World!"
+    return template('index', template_name = 'overview.tpl', current_view = 'overview')
 
 run(host='localhost', port=8080, debug=True)

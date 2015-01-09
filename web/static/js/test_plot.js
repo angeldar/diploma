@@ -1,11 +1,11 @@
 
-function plot_linechart(data) {
+function plot_linechart(bindto_element, data, xlabel) {
     var chart = c3.generate({
-        'bindto': '#chart',
+        'bindto': bindto_element,
         'data': data,
         'axis': {
             x: {
-                label: 'Время'
+                label: xlabel
             },
             y: {
                 label: 'Значение'
@@ -14,7 +14,7 @@ function plot_linechart(data) {
     });
 }
 
-var test_data = {
+var example_data = {
     xs: {
         'data1': 'x1'
     },
@@ -25,15 +25,12 @@ var test_data = {
 
 };
 
-//plot_linechart(test_data);
-
 // Test Ajax
 function musa_loader()
 {
     $(document).ready(function(){
         $.get('http://localhost:8080/musa', function(result){
             var res = JSON.parse(result);
-            console.log(res);
             res['mu']['x'].unshift('x_mu');
             res['mu']['y'].unshift('y_mu');
             res['lambda']['x'].unshift('x_lambda');
@@ -52,7 +49,7 @@ function musa_loader()
                     res['r']['x'], res['r']['y']
                 ]
             };
-            plot_linechart(data);
+            plot_linechart('#chart', data, 'Время');
         });
     });
 }
