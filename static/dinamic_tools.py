@@ -67,7 +67,24 @@ def musa_okumoto_plot(path_to_data):
     plot.grid()
     plot.show()
 
-## Jelinsky-Morands plots
+## Jelinsky-Moranda model
+def get_jelinski_moranda_data(path_to_data):
+
+    data = dp.read_data(path_to_data)
+    times_of_falls = data[:]
+    j = JelinskiMoranda(times_of_falls)
+    time_of_last_error = dp.time_of_last_error(times_of_falls)
+    x = [int(i) for i in np.linspace(1, 1.2 * time_of_last_error, 20)]
+    y_n = [round(float(j.func_n(i)), 4) for i in x]
+    # TODO: Test this plots
+    x_numbers_of_errors = [i for i in range(len(times_of_falls))]
+    y_mttf = [j.func_MTTF(i) for i in x_numbers_of_errors]
+    y_lambda = [round(float(j.func_lambda(i)), 4) for i in x_numbers_of_errors]     # Intensity of errors - Step chart
+    y_r = [round(float(j.func_R(i)), 4) for i in x_numbers_of_errors]               # Reliability - Strp chart
+    return {'n': {'x': x, 'y': y_n},
+            'mttf': {'x': x_numbers_of_errors, 'y': y_mttf},
+            'lambda': {'x': x_numbers_of_errors, 'y': y_lambda},
+            'r': {'x': x_numbers_of_errors, 'y': y_r}}
 
 def jelinski_moranda_MTTF(path_to_data, file_to_write_data = ''):
     data = dp.read_data(path_to_data)

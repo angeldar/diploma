@@ -65,9 +65,7 @@ class JelinskiMoranda:
         return res
 
     def func_F(self, i = None): #+
-        '''
-        Function of distribution of the errors
-        '''
+        '''Function of distribution of the errors'''
         if i is None:
             i = self.n - 1
         res = 1.0 - np.exp(-self.phi * (self.N - (i)) * self.X[i])

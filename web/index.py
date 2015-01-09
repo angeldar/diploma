@@ -26,6 +26,14 @@ def get_musa():
     musa = dt.get_musa_data('G:/dev/diploma/static/datasets/dataset_6.txt')
     return json.dumps(musa)
 
+@route('/musa-okumoto')
+def musa_okumoto():
+    return "Musa-Okumoto"
+
+@route('/static_models')
+def static_models():
+    return "Jelinski-Moranda"
+
 @route('/')
 def index():
     return static_file('index.html', root='views')
