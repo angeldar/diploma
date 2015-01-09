@@ -1,8 +1,13 @@
+import bottle
 from bottle import Bottle, response, route, run, template, static_file
 from static import dinamic_tools as dt
+from radon import static_tools as st
+import os, sys
 import json
 
 app = Bottle()
+
+bottle.TEMPLATE_PATH.insert(0, './views')
 
 @route('/img/<filename:re:.*\.png>')
 def send_image(filename):
@@ -42,14 +47,25 @@ def get_musa():
     return json.dumps(musa)
 
 @route('/musa-okumoto-ajax', method='GET')
-def get_musa():
+def get_musa_okumoto():
     musa_okumoto = dt.get_musa_okumoto_data('G:/dev/diploma/static/datasets/dataset_6.txt')
     return json.dumps(musa_okumoto)
 
 @route('/jelinsky-moranda-ajax', method='GET')
-def get_musa():
+def get_jelinsky_moranda():
     jm = dt.get_jelinski_moranda_data('G:/dev/diploma/static/datasets/dataset_6.txt')
     return json.dumps(jm)
+
+@route('/static-models-ajax', method='GET')
+def get_static_models():
+    static_models_data = []
+    print(sys.argv[0])
+
+    static_models_data = st.get_static_data_for_repo('G:/dev/bottle', 'bottle',
+                               ['G:/dev/bottle/test/test_importhook.py', 'G:/dev/bottle/test/test_wsgi.py'])
+
+    print(sys.argv[0])
+    return json.dumps(static_models_data)
 
 @route('/')
 @route('/index')

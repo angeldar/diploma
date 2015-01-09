@@ -1,16 +1,17 @@
 
-function plot_linechart(bindto_element, data, xlabel) {
+function plot_linechart(bindto_element, data, xlabel, axis) {
     var chart = c3.generate({
         'bindto': bindto_element,
         'data': data,
-        'axis': {
-            x: {
-                label: xlabel
-            },
-            y: {
-                label: 'Значение'
-            }
-        }
+        'axis': axis
+//        'axis': {
+//            x: {
+//                label: xlabel
+//            },
+//            y: {
+//                label: 'Значение'
+//            }
+//        }
     });
 }
 
@@ -108,6 +109,45 @@ function jelinsky_moranda_loader()
             };
             plot_linechart('#time-chart', time_data, 'Время');
             plot_linechart('#error-chart', error_data, 'Ошибки');
+        });
+    });
+}
+
+// Static Models Loader
+
+function static_models_loader()
+{
+    $(document).ready(function(){
+        $.get('http://localhost:8080/static-models-ajax', function(result){
+            var res = JSON.parse(result);
+            console.log(res);
+             res['ciclomatic']['A'].unshift('A');
+             res['ciclomatic']['B'].unshift('B');
+             res['ciclomatic']['C'].unshift('C');
+             res['ciclomatic']['D'].unshift('D');
+             res['ciclomatic']['E'].unshift('E');
+             res['ciclomatic']['F'].unshift('F');
+             res['date'].unshift('x');
+
+             var ciclomatic_data = {
+                xs: {
+                    'A': 'x', 'B': 'x', 'C': 'x','D': 'x', 'E': 'x', 'F': 'x'
+                },
+                columns: [
+                    res['ciclomatic']['A'], res['ciclomatic']['B'], res['ciclomatic']['C'],
+                    res['ciclomatic']['D'], res['ciclomatic']['E'], res['ciclomatic']['F'],
+                    res['date']
+                ]
+            };
+            var axis = {
+                x: {
+                    type: 'timeseries',
+                    tick: {
+                        format: '%Y-%m-%d'
+                    }
+                }
+            };
+            plot_linechart('#ciclomatic-chart', ciclomatic_data, 'Время', axis);
         });
     });
 }

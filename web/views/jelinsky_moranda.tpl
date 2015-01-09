@@ -1,4 +1,4 @@
-  <!-- Musa template -->
+  <!-- Jelinsky-Moranda template -->
   <h1 class="page-header">Модель Джелински-Моранды</h1>
   <div class="row placeholders">
     <div class="col-xs-12">
@@ -14,4 +14,4 @@
 
     </div>
   </div>
-  <!-- Graph template -->
+  <!-- Jelinsky-Moranda template -->
