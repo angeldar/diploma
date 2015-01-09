@@ -78,9 +78,9 @@ def get_jelinski_moranda_data(path_to_data):
     y_n = [round(float(j.func_n(i)), 4) for i in x]
     # TODO: Test this plots
     x_numbers_of_errors = [i for i in range(len(times_of_falls))]
-    y_mttf = [j.func_MTTF(i) for i in x_numbers_of_errors]
+    y_mttf = [int(j.func_MTTF(i)) for i in x_numbers_of_errors]
     y_lambda = [round(float(j.func_lambda(i)), 4) for i in x_numbers_of_errors]     # Intensity of errors - Step chart
-    y_r = [round(float(j.func_R(i)), 4) for i in x_numbers_of_errors]               # Reliability - Strp chart
+    y_r = [round(float(j.func_R(i)), 4) for i in x_numbers_of_errors]               # Reliability - Step chart
     return {'n': {'x': x, 'y': y_n},
             'mttf': {'x': x_numbers_of_errors, 'y': y_mttf},
             'lambda': {'x': x_numbers_of_errors, 'y': y_lambda},

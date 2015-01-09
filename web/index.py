@@ -1,5 +1,4 @@
-import bottle
-from bottle import Bottle, request, response, route, run, template, static_file
+from bottle import Bottle, response, route, run, template, static_file
 from static import dinamic_tools as dt
 import json
 
@@ -21,11 +20,6 @@ def send_js(filename):
 def enable_cors():
     response.headers['Access-Control-Allow-Origin'] = '*'
 
-@route('/musa', method='GET')
-def get_musa():
-    musa = dt.get_musa_data('G:/dev/diploma/static/datasets/dataset_6.txt')
-    return json.dumps(musa)
-
 @route('/jelinsky-moranda-model')
 def musa_okumoto():
     return template('index', template_name = 'jelinsky_moranda.tpl', current_view = 'jelinsky_moranda')
@@ -41,6 +35,21 @@ def musa_okumoto():
 @route('/static-models')
 def static_models():
     return template('index', template_name = 'static_models.tpl', current_view = 'static_models')
+
+@route('/musa-ajax', method='GET')
+def get_musa():
+    musa = dt.get_musa_data('G:/dev/diploma/static/datasets/dataset_6.txt')
+    return json.dumps(musa)
+
+@route('/musa-okumoto-ajax', method='GET')
+def get_musa():
+    musa_okumoto = dt.get_musa_okumoto_data('G:/dev/diploma/static/datasets/dataset_6.txt')
+    return json.dumps(musa_okumoto)
+
+@route('/jelinsky-moranda-ajax', method='GET')
+def get_musa():
+    jm = dt.get_jelinski_moranda_data('G:/dev/diploma/static/datasets/dataset_6.txt')
+    return json.dumps(jm)
 
 @route('/')
 @route('/index')
