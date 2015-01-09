@@ -5,10 +5,10 @@ function plot_linechart(data) {
         'data': data,
         'axis': {
             x: {
-                label: 'Отказы'
+                label: 'Время'
             },
             y: {
-                label: 'Предсказаннок среднее количество откзаов'
+                label: 'Значение'
             }
         }
     });
@@ -25,7 +25,7 @@ var test_data = {
 
 };
 
-plot_linechart(test_data);
+//plot_linechart(test_data);
 
 // Test Ajax
 function musa_loader()
@@ -33,11 +33,26 @@ function musa_loader()
     $(document).ready(function(){
         $.get('http://localhost:8080/musa', function(result){
             var res = JSON.parse(result);
-            res['x'].unshift('x1');
-            res['y'].unshift('mu');
-            test_data.xs = {'mu': 'x1'};
-            test_data.columns = [res['x'], res['y']];
-            plot_linechart(test_data);
+            console.log(res);
+            res['mu']['x'].unshift('x_mu');
+            res['mu']['y'].unshift('y_mu');
+            res['lambda']['x'].unshift('x_lambda');
+            res['lambda']['y'].unshift('y_lambda');
+            res['r']['x'].unshift('x_r');
+            res['r']['y'].unshift('y_r');
+            var data = {
+                xs: {
+                    'y_mu': 'x_mu',
+                    'y_lambda': 'x_lambda',
+                    'y_r': 'x_r'
+                },
+                columns: [
+                    res['mu']['x'], res['mu']['y'],
+                    res['lambda']['x'], res['lambda']['y'],
+                    res['r']['x'], res['r']['y']
+                ]
+            };
+            plot_linechart(data);
         });
     });
 }

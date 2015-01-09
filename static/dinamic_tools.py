@@ -16,13 +16,19 @@ def get_musa_data(path_to_data):
     init_guess = 0.000001
     m = Musa(time_passed, times_of_falls, init_guess)
 
-    x_mu = np.linspace(1, 1.2 * time_of_last_error, 20)
-    y_mu = m._mu(x_mu)
-    x_mu = [int(i) for i in x_mu]
-    y_mu = [int(i) for i in y_mu]#[round(float(i),5) for i in y_mu]
-    return {'mu' : {
-        'x' : x_mu,
-        'y' :y_mu}}
+    x = [int(i) for i in np.linspace(1, 1.2 * time_of_last_error, 20)]
+    # Mean time of errors to the time of work
+    y_mu = [int(m.func_mu(i)) for i in x]
+    # Failure raite aka Intensivnost otkazov
+    y_lambda = [round(float(m.func_lambd(i)),4) for i in x]
+    # Reliability function aka Funkciya nadezhnosti
+    prediction_time_of_work = 100
+    y_r = [round(float(m.func_r(i, prediction_time_of_work)),4) for i in x]
+
+    return {
+        'mu': {'x': x, 'y': y_mu},
+        'lambda': {'x': x, 'y': y_lambda},
+        'r': {'x': x, 'y': y_r}}
 
 # Musa-Okumoto plots
 
@@ -121,7 +127,7 @@ def plot_all_models(path_to_data, init_guess = 0.000001):
 if __name__ == '__main__':
     get_musa_data('./datasets/dataset_6.txt')
     # jelinski_moranda_MTTF('./datasets/dataset_6.txt')
-    plot_all_models('./datasets/dataset_6.txt')
+    # plot_all_models('./datasets/dataset_6.txt')
     # plot_all_models('./datasets/journal_of_computer_application_dataset.txt')
     # plot_all_models('./datasets/dataset_40.txt')
 

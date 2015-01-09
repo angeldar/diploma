@@ -24,10 +24,7 @@ def enable_cors():
 @route('/musa', method='GET')
 def get_musa():
     musa = dt.get_musa_data('G:/dev/diploma/static/datasets/dataset_6.txt')
-    x_mu = musa['mu']['x']
-    y_mu = musa['mu']['y']
-    print(x_mu, y_mu)
-    return json.dumps({'x' : x_mu, 'y' : y_mu})
+    return json.dumps(musa)
 
 @route('/')
 def index():
