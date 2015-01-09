@@ -5,7 +5,7 @@ import static.plot as plot
 import static.data_processing as dp
 import numpy as np
 
-# Musa plots
+# Musa model
 
 def get_musa_data(path_to_data):
     data = dp.read_data(path_to_data)
@@ -30,9 +30,32 @@ def get_musa_data(path_to_data):
         'lambda': {'x': x, 'y': y_lambda},
         'r': {'x': x, 'y': y_r}}
 
-# Musa-Okumoto plots
+# Musa-Okumoto model
 
-def musa_okumoto_for_real_data(path_to_data):
+def get_musa_okumoto_data(path_to_data):
+    data = dp.read_data(path_to_data)
+    time_passed = data[-1] - data[-2]
+    errors = dp.convert_time_between_errors_to_time_of_errors(data)
+    times_of_falls = errors[:-1]
+    time_of_last_error = times_of_falls[-1]
+    init_guess = 0.00000001
+    m = MusaOkumoto(time_passed, times_of_falls, init_guess)
+
+    x = [int(i) for i in np.linspace(1, 1.2 * time_of_last_error, 20)]
+    # Mean time of errors to the time of work
+    y_mu = [int(m.func_mu(i)) for i in x]
+    # Failure raite aka Intensivnost otkazov
+    y_lambda = [round(float(m.func_lambd(i)),4) for i in x]
+    # Reliability function aka Funkciya nadezhnosti
+    prediction_time_of_work = 100
+    y_r = [round(float(m.func_r(i, prediction_time_of_work)),4) for i in x]
+
+    return {
+        'mu': {'x': x, 'y': y_mu},
+        'lambda': {'x': x, 'y': y_lambda},
+        'r': {'x': x, 'y': y_r}}
+
+def musa_okumoto_plot(path_to_data):
     data = dp.read_data(path_to_data)
     time_passed = data[-1] - data[-2]
     errors = dp.convert_time_between_errors_to_time_of_errors(data)
