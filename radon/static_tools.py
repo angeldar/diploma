@@ -88,8 +88,10 @@ def get_halstead_for_repo_to_file(repo_path = 'G:/dev/django', res_filename = 'G
 def get_static_data_for_repo(repo_path = 'G:/dev/twisted', proj_name = 'twisted', exclude = []):
     # TODO: Test
     gw = git_walker(repo_path)
-    path = gw.create_path(20)
-    res = {'date': [], 'length': [], 'volume': [], 'difficulty': [], 'effort': [], 'time': [], 'bugs': [],
+    number_of_steps = 20
+    step = 0
+    path = gw.create_path(number_of_steps)
+    res = {'date': [], 'length': [], 'volume': [], 'difficulty': [], 'effort': [], 'time': [], 'bugs': [], 'x_error': [],
            'ciclomatic': {'A': [], 'B': [], 'C': [], 'D': [], 'E': [], 'F': []},
            'proj_name': proj_name}
     for hash in reversed(path):
@@ -107,6 +109,8 @@ def get_static_data_for_repo(repo_path = 'G:/dev/twisted', proj_name = 'twisted'
         res['effort'].append(int(holst.effort))
         res['time'].append(int(holst.time))
         res['bugs'].append(int(holst.bugs + 0.5))
+        res['x_error'].append(number_of_steps - step)
+        step += 1
         ciclomatic_ranks = get_ciclomatic_for_folder([repo_path])
         for key in ciclomatic_ranks:
             res['ciclomatic'][key].append(ciclomatic_ranks[key])

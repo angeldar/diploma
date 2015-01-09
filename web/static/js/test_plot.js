@@ -4,26 +4,16 @@ function plot_linechart(bindto_element, data, xlabel, axis) {
         'bindto': bindto_element,
         'data': data,
         'axis': axis
-//        'axis': {
-//            x: {
-//                label: xlabel
-//            },
-//            y: {
-//                label: 'Значение'
-//            }
-//        }
     });
 }
 
-var example_data = {
-    xs: {
-        'data1': 'x1'
+var base_axis = {
+    x: {
+        label: 'Время'
     },
-    columns: [
-        ['x1', 10, 30, 45, 50, 70, 100],
-        ['data1', 30, 200, 100, 400, 150, 250]
-    ]
-
+    y: {
+        label: 'Значение'
+    }
 };
 
 // Musa and Musa-Okumoto
@@ -51,7 +41,7 @@ function musa_and_musa_okumoto_loader(model_name)
                     res['r']['x'], res['r']['y']
                 ]
             };
-            plot_linechart('#chart', data, 'Время');
+            plot_linechart('#chart', data, 'Время', base_axis);
         });
     });
 }
@@ -107,8 +97,8 @@ function jelinsky_moranda_loader()
                 'y_lambda' : 'step'
                 }
             };
-            plot_linechart('#time-chart', time_data, 'Время');
-            plot_linechart('#error-chart', error_data, 'Ошибки');
+            plot_linechart('#time-chart', time_data, 'Время', base_axis);
+            plot_linechart('#error-chart', error_data, 'Ошибки', base_axis);
         });
     });
 }
@@ -121,15 +111,35 @@ function static_models_loader()
         $.get('http://localhost:8080/static-models-ajax', function(result){
             var res = JSON.parse(result);
             console.log(res);
-             res['ciclomatic']['A'].unshift('A');
-             res['ciclomatic']['B'].unshift('B');
-             res['ciclomatic']['C'].unshift('C');
-             res['ciclomatic']['D'].unshift('D');
-             res['ciclomatic']['E'].unshift('E');
-             res['ciclomatic']['F'].unshift('F');
-             res['date'].unshift('x');
+            res['x_error'].unshift('x');
+            res['length'].unshift('length');
+            res['volume'].unshift('volume');
+            res['difficulty'].unshift('difficulty');
+            res['effort'].unshift('effort');
+            res['time'].unshift('time');
+            res['bugs'].unshift('bugs')
+            var halstead_data = {
+                xs: {
+                    'length': 'x', 'volume': 'x', 'difficulty': 'x',
+                    'effort': 'x', 'time': 'x', 'bugs': 'x'
+                },
+                columns: [
+                    res['length'], res['volume'], res['difficulty'],
+                    res['effort'], res['time'], res['bugs'], res['x_error']
+                ]
+            };
+            plot_linechart('#halstead-chart', halstead_data, 'Ошибки', base_axis);
 
-             var ciclomatic_data = {
+            // Ciclomatic plotting
+            res['ciclomatic']['A'].unshift('A');
+            res['ciclomatic']['B'].unshift('B');
+            res['ciclomatic']['C'].unshift('C');
+            res['ciclomatic']['D'].unshift('D');
+            res['ciclomatic']['E'].unshift('E');
+            res['ciclomatic']['F'].unshift('F');
+            res['date'].unshift('x');
+
+            var ciclomatic_data = {
                 xs: {
                     'A': 'x', 'B': 'x', 'C': 'x','D': 'x', 'E': 'x', 'F': 'x'
                 },
@@ -139,7 +149,7 @@ function static_models_loader()
                     res['date']
                 ]
             };
-            var axis = {
+            var ciclomatic_axis = {
                 x: {
                     type: 'timeseries',
                     tick: {
@@ -147,7 +157,7 @@ function static_models_loader()
                     }
                 }
             };
-            plot_linechart('#ciclomatic-chart', ciclomatic_data, 'Время', axis);
+            plot_linechart('#ciclomatic-chart', ciclomatic_data, 'Время', ciclomatic_axis);
         });
     });
 }
