@@ -17,7 +17,7 @@ def get_musa_data(path_to_data):
     m = Musa(time_passed, times_of_falls, init_guess)
 
     x = [int(i) for i in np.linspace(1, 1.2 * time_of_last_error, 20)]
-    # Mean time of errors to the time of work
+    # Mean number of errors to the time of work
     y_mu = [int(m.func_mu(i)) for i in x]
     # Failure raite aka Intensivnost otkazov
     y_lambda = [round(float(m.func_lambd(i)),4) for i in x]
@@ -28,7 +28,8 @@ def get_musa_data(path_to_data):
     return {
         'mu': {'x': x, 'y': y_mu},
         'lambda': {'x': x, 'y': y_lambda},
-        'r': {'x': x, 'y': y_r}}
+        'r': {'x': x, 'y': y_r},
+        'errors_time': data}
 
 # Musa-Okumoto model
 
@@ -53,7 +54,8 @@ def get_musa_okumoto_data(path_to_data):
     return {
         'mu': {'x': x, 'y': y_mu},
         'lambda': {'x': x, 'y': y_lambda},
-        'r': {'x': x, 'y': y_r}}
+        'r': {'x': x, 'y': y_r},
+        'errors_time': data}
 
 def musa_okumoto_plot(path_to_data):
     data = dp.read_data(path_to_data)
@@ -75,16 +77,17 @@ def get_jelinski_moranda_data(path_to_data):
     j = JelinskiMoranda(times_of_falls)
     time_of_last_error = dp.time_of_last_error(times_of_falls)
     x = [int(i) for i in np.linspace(1, 1.2 * time_of_last_error, 20)]
-    y_n = [round(float(j.func_n(i)), 4) for i in x]
+    y_n = [round(float(j.func_n(i)), 4) for i in x]                                 #  Mean value of errors
     # TODO: Test this plots
     x_numbers_of_errors = [i for i in range(len(times_of_falls))]
     y_mttf = [int(j.func_MTTF(i)) for i in x_numbers_of_errors]
-    y_lambda = [round(float(j.func_lambda(i)), 4) for i in x_numbers_of_errors]     # Intensity of errors - Step chart
-    y_r = [round(float(j.func_R(i)), 4) for i in x_numbers_of_errors]               # Reliability - Step chart
+    y_lambda = [round(float(j.func_lambda(i)), 4) for i in x_numbers_of_errors]     #  Intensity of errors - Step chart
+    y_r = [round(float(j.func_R(i)), 4) for i in x_numbers_of_errors]               #  Reliability - Step chart
     return {'n': {'x': x, 'y': y_n},
             'mttf': {'x': x_numbers_of_errors, 'y': y_mttf},
             'lambda': {'x': x_numbers_of_errors, 'y': y_lambda},
-            'r': {'x': x_numbers_of_errors, 'y': y_r}}
+            'r': {'x': x_numbers_of_errors, 'y': y_r},
+            'errors_time': times_of_falls}
 
 def jelinski_moranda_MTTF(path_to_data, file_to_write_data = ''):
     data = dp.read_data(path_to_data)

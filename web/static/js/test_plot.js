@@ -15,6 +15,23 @@ var base_axis = {
         label: 'Значение'
     }
 };
+var time_axis = {
+    x: {
+        type: 'timeseries',
+        tick: {
+            format: '%Y-%m-%d'
+        }
+    }
+};
+
+function create_table(data) {
+    var tbody = $('#table').children('tbody') ;
+    tbody.html("");
+    for (var i = 0; i < data.length; ++i) {
+        tbody.append('<tr><td>' + (i+1) + '</td><td>' + data[i] + '</td></tr>');
+    }
+    $('#table-block').show();
+}
 
 // Musa and Musa-Okumoto
 
@@ -24,16 +41,16 @@ function musa_and_musa_okumoto_loader(model_name)
         $.get('http://localhost:8080/' + model_name + '-ajax', function(result){
             var res = JSON.parse(result);
             res['mu']['x'].unshift('x_mu');
-            res['mu']['y'].unshift('y_mu');
+            res['mu']['y'].unshift('mu');
             res['lambda']['x'].unshift('x_lambda');
-            res['lambda']['y'].unshift('y_lambda');
+            res['lambda']['y'].unshift('lambda');
             res['r']['x'].unshift('x_r');
-            res['r']['y'].unshift('y_r');
+            res['r']['y'].unshift('r');
             var data = {
                 xs: {
-                    'y_mu': 'x_mu',
-                    'y_lambda': 'x_lambda',
-                    'y_r': 'x_r'
+                    'mu': 'x_mu',
+                    'lambda': 'x_lambda',
+                    'r': 'x_r'
                 },
                 columns: [
                     res['mu']['x'], res['mu']['y'],
@@ -42,6 +59,9 @@ function musa_and_musa_okumoto_loader(model_name)
                 ]
             };
             plot_linechart('#chart', data, 'Время', base_axis);
+
+            create_table(res['errors_time']);
+            $('.spoiler-description').show();
         });
     });
 }
@@ -63,7 +83,6 @@ function jelinsky_moranda_loader()
     $(document).ready(function(){
         $.get('http://localhost:8080/jelinsky-moranda-ajax', function(result){
             var res = JSON.parse(result);
-            console.log(res);
             res['n']['x'].unshift('x_n');
             res['n']['y'].unshift('y_n');
             res['r']['x'].unshift('x_r');
@@ -84,12 +103,12 @@ function jelinsky_moranda_loader()
 
             var error_data = {
                 xs: {
-                    'y_r': 'x_r',
+//                    'y_r': 'x_r',                     // Reliability function is not representative
                     'y_lambda': 'x_lambda',
                     'y_mttf': 'x_mttf',
                 },
                 columns: [
-                    res['r']['x'], res['r']['y'],
+//                    res['r']['x'], res['r']['y'],
                     res['lambda']['x'], res['lambda']['y'],
                     res['mttf']['x'], res['mttf']['y'],
                 ],
@@ -99,36 +118,48 @@ function jelinsky_moranda_loader()
             };
             plot_linechart('#time-chart', time_data, 'Время', base_axis);
             plot_linechart('#error-chart', error_data, 'Ошибки', base_axis);
+
+            create_table(res['errors_time']);
+            $('.spoiler-description').show();
         });
     });
 }
 
 // Static Models Loader
 
-function static_models_loader()
-{
+function static_models_loader() {
+
+    function escapePath(text) {
+      return text.replace(/\\/g, '/');
+    }
+
     $(document).ready(function(){
-        $.get('http://localhost:8080/static-models-ajax', function(result){
+        var path_to_git_repo = escapePath($('#link-to-git-repo').val());
+        $.ajax({
+          type: 'POST',
+          url: 'http://localhost:8080/static-models-ajax',
+          data: {'path': path_to_git_repo},
+          success: function(result){
             var res = JSON.parse(result);
-            console.log(res);
-            res['x_error'].unshift('x');
+//            res['x_error'].unshift('x');
+            res['date'].unshift('x');
             res['length'].unshift('length');
             res['volume'].unshift('volume');
-            res['difficulty'].unshift('difficulty');
-            res['effort'].unshift('effort');
+//            res['difficulty'].unshift('difficulty');
+//            res['effort'].unshift('effort');
             res['time'].unshift('time');
             res['bugs'].unshift('bugs')
             var halstead_data = {
                 xs: {
-                    'length': 'x', 'volume': 'x', 'difficulty': 'x',
-                    'effort': 'x', 'time': 'x', 'bugs': 'x'
+                    'length': 'x', 'volume': 'x',
+                    'time': 'x', 'bugs': 'x'
                 },
                 columns: [
-                    res['length'], res['volume'], res['difficulty'],
-                    res['effort'], res['time'], res['bugs'], res['x_error']
+                    res['length'], res['volume'],
+                    res['time'], res['bugs'], res['date']
                 ]
             };
-            plot_linechart('#halstead-chart', halstead_data, 'Ошибки', base_axis);
+            plot_linechart('#halstead-chart', halstead_data, 'Ошибки', time_axis);
 
             // Ciclomatic plotting
             res['ciclomatic']['A'].unshift('A');
@@ -137,7 +168,7 @@ function static_models_loader()
             res['ciclomatic']['D'].unshift('D');
             res['ciclomatic']['E'].unshift('E');
             res['ciclomatic']['F'].unshift('F');
-            res['date'].unshift('x');
+
 
             var ciclomatic_data = {
                 xs: {
@@ -149,15 +180,10 @@ function static_models_loader()
                     res['date']
                 ]
             };
-            var ciclomatic_axis = {
-                x: {
-                    type: 'timeseries',
-                    tick: {
-                        format: '%Y-%m-%d'
-                    }
-                }
-            };
-            plot_linechart('#ciclomatic-chart', ciclomatic_data, 'Время', ciclomatic_axis);
+
+            plot_linechart('#ciclomatic-chart', ciclomatic_data, 'Время', time_axis);
+            $('.spoiler-description').show();
+        }
         });
     });
 }

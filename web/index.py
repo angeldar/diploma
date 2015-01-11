@@ -1,5 +1,5 @@
 import bottle
-from bottle import Bottle, response, route, run, template, static_file
+from bottle import Bottle, request, response, route, run, template, static_file
 from static import dinamic_tools as dt
 from radon import static_tools as st
 import os, sys
@@ -56,16 +56,18 @@ def get_jelinsky_moranda():
     jm = dt.get_jelinski_moranda_data('G:/dev/diploma/static/datasets/dataset_6.txt')
     return json.dumps(jm)
 
-@route('/static-models-ajax', method='GET')
+@route('/static-models-ajax', method='POST')
 def get_static_models():
-    static_models_data = []
-    print(sys.argv[0])
+    path_to_repo = request.forms.get("path")
+    if os.path.isdir(path_to_repo):
+        project_name = os.path.split(path_to_repo)[-1]
 
-    static_models_data = st.get_static_data_for_repo('G:/dev/bottle', 'bottle',
-                               ['G:/dev/bottle/test/test_importhook.py', 'G:/dev/bottle/test/test_wsgi.py'])
+        static_models_data = st.get_static_data_for_repo(repo_path = path_to_repo, proj_name = project_name,
+            exclude = ['G:/dev/bottle/test/test_importhook.py', 'G:/dev/bottle/test/test_wsgi.py'])
 
-    print(sys.argv[0])
-    return json.dumps(static_models_data)
+        return json.dumps(static_models_data)
+    else:
+        return json.dumps({'error': 'No such folder'})
 
 @route('/')
 @route('/index')

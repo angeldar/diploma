@@ -16,7 +16,6 @@
 
         % include(template_name)
 
-          <!--% include('table.tpl')-->
         </div>
       </div>
     </div>

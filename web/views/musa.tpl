@@ -5,6 +5,11 @@
       <div id="graph-container">
         <div id="chart"></div>
       </div>
+      <div class="spoiler-description">
+          <p>mu - Среднее количество ошибок к заданному времени наработки.</p>
+          <p>lambda - Интенсивность отказов.</p>
+          <p>r - Функция надежности.</p>
+      </div>
       <h4>Показатели надежности</h4>
       <span class="text-muted">модели Мусы</span>
       <form action="">
@@ -12,4 +17,5 @@
       </form>
     </div>
   </div>
-  <!-- Graph template -->
+  % include('table.tpl')
+  <!-- Musa template -->
