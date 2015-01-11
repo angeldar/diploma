@@ -29,7 +29,7 @@
       <h4>Количество методов</h4>
       <span class="text-muted">определенной цикломатической сложности</span>
       <form action="">
-        <p><input type="text" id="link-to-git-repo"></p>
+        <p><input type="text" id="link-to-data"></p>
         <p><input type="button" value="Рассчитать" onclick="static_models_loader()"></p>
       </form>
     </div>

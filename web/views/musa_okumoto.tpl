@@ -13,6 +13,7 @@
       <h4>Показатели надежности</h4>
       <span class="text-muted">модели Мусы-Окумото</span>
       <form action="">
+        <p><input type="text" id="link-to-data"></p>
         <p><input type="button" value="Рассчитать" onclick="musa_okumoto_loader()"></p>
       </form>
     </div>

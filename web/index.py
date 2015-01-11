@@ -41,30 +41,40 @@ def musa_okumoto():
 def static_models():
     return template('index', template_name = 'static_models.tpl', current_view = 'static_models')
 
-@route('/musa-ajax', method='GET')
+@route('/musa-ajax', method='POST')
 def get_musa():
-    musa = dt.get_musa_data('G:/dev/diploma/static/datasets/dataset_6.txt')
-    return json.dumps(musa)
+    path_to_file = request.forms.get("path")
+    if os.path.isfile(path_to_file):
+        musa = dt.get_musa_data(path_to_file)
+        return json.dumps(musa)
+    else:
+        return json.dumps({'error': 'No such file'})
 
-@route('/musa-okumoto-ajax', method='GET')
+@route('/musa-okumoto-ajax', method='POST')
 def get_musa_okumoto():
-    musa_okumoto = dt.get_musa_okumoto_data('G:/dev/diploma/static/datasets/dataset_6.txt')
-    return json.dumps(musa_okumoto)
+    path_to_file = request.forms.get("path")
+    if os.path.isfile(path_to_file):
+        musa_okumoto = dt.get_musa_okumoto_data(path_to_file)
+        return json.dumps(musa_okumoto)
+    else:
+        return json.dumps({'error': 'No such file'})
 
-@route('/jelinsky-moranda-ajax', method='GET')
+@route('/jelinsky-moranda-ajax', method='POST')
 def get_jelinsky_moranda():
-    jm = dt.get_jelinski_moranda_data('G:/dev/diploma/static/datasets/dataset_6.txt')
-    return json.dumps(jm)
+    path_to_file = request.forms.get("path")
+    if os.path.isfile(path_to_file):
+        jm = dt.get_jelinski_moranda_data(path_to_file)
+        return json.dumps(jm)
+    else:
+        return json.dumps({'error': 'No such file'})
 
 @route('/static-models-ajax', method='POST')
 def get_static_models():
     path_to_repo = request.forms.get("path")
     if os.path.isdir(path_to_repo):
         project_name = os.path.split(path_to_repo)[-1]
-
         static_models_data = st.get_static_data_for_repo(repo_path = path_to_repo, proj_name = project_name,
             exclude = ['G:/dev/bottle/test/test_importhook.py', 'G:/dev/bottle/test/test_wsgi.py'])
-
         return json.dumps(static_models_data)
     else:
         return json.dumps({'error': 'No such folder'})

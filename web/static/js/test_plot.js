@@ -24,6 +24,10 @@ var time_axis = {
     }
 };
 
+function escapePath(text) {
+  return text.replace(/\\/g, '/');
+}
+
 function create_table(data) {
     var tbody = $('#table').children('tbody') ;
     tbody.html("");
@@ -35,36 +39,42 @@ function create_table(data) {
 
 // Musa and Musa-Okumoto
 
-function musa_and_musa_okumoto_loader(model_name)
-{
+function musa_and_musa_okumoto_loader(model_name) {
+    var path_to_file = escapePath($('#link-to-data').val());
     $(document).ready(function(){
-        $.get('http://localhost:8080/' + model_name + '-ajax', function(result){
-            var res = JSON.parse(result);
-            res['mu']['x'].unshift('x_mu');
-            res['mu']['y'].unshift('mu');
-            res['lambda']['x'].unshift('x_lambda');
-            res['lambda']['y'].unshift('lambda');
-            res['r']['x'].unshift('x_r');
-            res['r']['y'].unshift('r');
-            var data = {
-                xs: {
-                    'mu': 'x_mu',
-                    'lambda': 'x_lambda',
-                    'r': 'x_r'
-                },
-                columns: [
-                    res['mu']['x'], res['mu']['y'],
-                    res['lambda']['x'], res['lambda']['y'],
-                    res['r']['x'], res['r']['y']
-                ]
-            };
-            plot_linechart('#chart', data, 'Время', base_axis);
+        $.ajax({
+            type: 'POST',
+            url: 'http://localhost:8080/' + model_name + '-ajax',
+            data: {'path': path_to_file},
+            success: function(result){
+                var res = JSON.parse(result);
+                res['mu']['x'].unshift('x_mu');
+                res['mu']['y'].unshift('mu');
+                res['lambda']['x'].unshift('x_lambda');
+                res['lambda']['y'].unshift('lambda');
+                res['r']['x'].unshift('x_r');
+                res['r']['y'].unshift('r');
+                var data = {
+                    xs: {
+                        'mu': 'x_mu',
+                        'lambda': 'x_lambda',
+                        'r': 'x_r'
+                    },
+                    columns: [
+                        res['mu']['x'], res['mu']['y'],
+                        res['lambda']['x'], res['lambda']['y'],
+                        res['r']['x'], res['r']['y']
+                    ]
+                };
+                plot_linechart('#chart', data, 'Время', base_axis);
 
-            create_table(res['errors_time']);
-            $('.spoiler-description').show();
+                create_table(res['errors_time']);
+                $('.spoiler-description').show();
+            }
         });
     });
-}
+ }
+
 
 function musa_loader()
 {
@@ -80,61 +90,61 @@ function musa_okumoto_loader()
 
 function jelinsky_moranda_loader()
 {
-    $(document).ready(function(){
-        $.get('http://localhost:8080/jelinsky-moranda-ajax', function(result){
-            var res = JSON.parse(result);
-            res['n']['x'].unshift('x_n');
-            res['n']['y'].unshift('y_n');
-            res['r']['x'].unshift('x_r');
-            res['r']['y'].unshift('y_r');
-            res['lambda']['x'].unshift('x_lambda');
-            res['lambda']['y'].unshift('y_lambda');
-            res['mttf']['x'].unshift('x_mttf');
-            res['mttf']['y'].unshift('y_mttf');
+    $(document).ready(function() {
+        var path_to_file = escapePath($('#link-to-data').val());
+        $.ajax({
+              type: 'POST',
+              url: 'http://localhost:8080/jelinsky-moranda-ajax',
+              data: {'path': path_to_file},
+              success: function(result){
+                var res = JSON.parse(result);
+                res['n']['x'].unshift('x_n');
+                res['n']['y'].unshift('n');
+                res['r']['x'].unshift('x_r');
+                res['r']['y'].unshift('r');
+                res['lambda']['x'].unshift('x_lambda');
+                res['lambda']['y'].unshift('lambda');
+                res['mttf']['x'].unshift('x_mttf');
+                res['mttf']['y'].unshift('mttf');
 
-            var time_data = {
-                xs: {
-                    'y_n': 'x_n'
-                },
-                columns: [
-                    res['n']['x'], res['n']['y']
-                ]
-            };
+                var time_data = {
+                    xs: {
+                        'n': 'x_n'
+                    },
+                    columns: [
+                        res['n']['x'], res['n']['y']
+                    ]
+                };
 
-            var error_data = {
-                xs: {
-//                    'y_r': 'x_r',                     // Reliability function is not representative
-                    'y_lambda': 'x_lambda',
-                    'y_mttf': 'x_mttf',
-                },
-                columns: [
-//                    res['r']['x'], res['r']['y'],
-                    res['lambda']['x'], res['lambda']['y'],
-                    res['mttf']['x'], res['mttf']['y'],
-                ],
-                types: {
-                'y_lambda' : 'step'
-                }
-            };
-            plot_linechart('#time-chart', time_data, 'Время', base_axis);
-            plot_linechart('#error-chart', error_data, 'Ошибки', base_axis);
+                var error_data = {
+                    xs: {
+    //                    'y_r': 'x_r',                     // Reliability function is not representative
+                        'lambda': 'x_lambda',
+                        'mttf': 'x_mttf',
+                    },
+                    columns: [
+                        res['lambda']['x'], res['lambda']['y'],
+                        res['mttf']['x'], res['mttf']['y'],
+                    ],
+                    types: {
+                        'lambda' : 'step'
+                    }
+                };
+                plot_linechart('#time-chart', time_data, 'Время', base_axis);
+                plot_linechart('#error-chart', error_data, 'Ошибки', base_axis);
 
-            create_table(res['errors_time']);
-            $('.spoiler-description').show();
-        });
+                create_table(res['errors_time']);
+                $('.spoiler-description').show();
+            }
+    });
     });
 }
 
 // Static Models Loader
 
 function static_models_loader() {
-
-    function escapePath(text) {
-      return text.replace(/\\/g, '/');
-    }
-
     $(document).ready(function(){
-        var path_to_git_repo = escapePath($('#link-to-git-repo').val());
+        var path_to_git_repo = escapePath($('#link-to-data').val());
         $.ajax({
           type: 'POST',
           url: 'http://localhost:8080/static-models-ajax',

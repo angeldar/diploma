@@ -5,19 +5,20 @@
       <div id="graph-container">
           <div id="time-chart"></div>
           <div class="spoiler-description">
-            <p>y_n - Среднее количество ошибок к заданному времени наработки.</p>
+            <p>n - Среднее количество ошибок к заданному времени наработки.</p>
           </div>
 
         <div id="error-chart"></div>
         <div class="spoiler-description">
           <!--<p>y_r - Функция надежности // Не репрезентативна</p>-->
-          <p>y_lambda - Интенсивность возникновения отказов после возникновения i-1 отказа.</p>
-          <p>y_mttf - Среднее время работы между отказами.</p>
+          <p>lambda - Интенсивность возникновения отказов после возникновения i-1 отказа.</p>
+          <p>mttf - Среднее время работы между отказами.</p>
         </div>
       </div>
       <h4>Показатели надежности</h4>
       <span class="text-muted">модели Джелински-Моранды</span>
       <form action="">
+        <p><input type="text" id="link-to-data"></p>
         <p><input type="button" value="Рассчитать" onclick="jelinsky_moranda_loader()"></p>
       </form>
 
